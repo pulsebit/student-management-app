@@ -1,0 +1,52 @@
+.Login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.Login .form-wrapper {
+  background: #fff;
+  width: 100%;
+  max-width: 490px;
+  margin-bottom: 30px;
+}
+
+.Login .form-header {
+  background: var(--secondary-color);
+  height: 135px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.Login .form-header .logo-img {
+  width: 383px;
+}
+
+.Login .form-body {
+  padding: 45px 35px 15px 35px;
+}
+
+.Login .form-body .form-group:not(:last-child) {
+  margin-bottom: 25px;
+}
+
+.Login .form-body input {
+  height: 55px;
+  border-radius: 0;
+}
+
+.Login .form-footer {
+  padding: 0 45px 30px 45px;
+  text-align: right;
+}
+
+.Login .form-body button {
+  background: var(--primary-color);
+  width: 100%;
+  border-radius: 0;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1.4px;
+}

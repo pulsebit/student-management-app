@@ -1,0 +1,33 @@
+
+.left-sidebar ul li {
+  margin-bottom: 4px;
+  margin-top: 4px;
+}
+.left-sidebar ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.left-sidebar ul li a {
+  display: flex;
+  padding: 10px 15px 10px 20px;
+  color: #00123a;
+  font-size: 1.06em;
+  border-radius: 3px;
+  text-decoration: none;
+}
+
+.left-sidebar ul li a svg {
+  width: 24px;
+  margin-top: 4px;
+}
+
+.left-sidebar ul li a span {
+  margin-left: 8px;
+}
+
+.menu__link--sublist.active,
+.left-sidebar ul li a:hover {
+  background: #f3f6f8;
+}

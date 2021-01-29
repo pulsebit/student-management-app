@@ -1,0 +1,89 @@
+.notification-list {
+  background: #fff;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  margin: 0 auto;
+  margin-bottom: 1px;
+}
+
+.notification-list:hover {
+  text-decoration: none;
+}
+
+.notification-list .left-wrapper span {
+  display: block;
+}
+
+.notification-list .left-wrapper .name {
+    font-size: 15px;
+    color: #222;
+}
+
+.notification-list .left-wrapper .amount {
+  font-weight: 500;
+  font-size: 16px;
+  color: #495057;
+} 
+
+.notification-list .left-wrapper .date {
+  font-size: 14px;
+  color: #aaa;
+}
+
+.right-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.right-wrapper .notifStatus {
+  display: flex;
+  align-items: center;
+}
+
+.right-wrapper .dot {
+  width: 13px;
+  height: 13px;
+  margin-right: 6px;
+  border-radius: 50%;
+  border: 2px solid #007bff;
+  background: #007bff;
+}
+
+.right-wrapper .dot.read {
+  background: transparent;
+}
+
+.center-wrapper {
+  display: inherit;
+  flex-direction: column;
+}
+
+.notification-list .center-wrapper .description {
+  font-weight: 500;
+  font-size: 16px;
+  color: #495057
+}
+
+span.status {
+  border-radius: 20px;
+  padding: 1px 10px;
+  font-size: 13px;
+  width: fit-content;
+}
+
+span.status.pending {
+  color: #545b62;
+  background: rgb(84 91 98 / 0.21);
+}
+
+span.status.cancelled {
+  color: rgb(220 38 38);
+  background: rgb(245 207 204 / .21);
+}
+span.status.paid {
+  color: rgb(52 211 153);
+  background: #34d39936;
+}

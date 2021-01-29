@@ -1,0 +1,316 @@
+.create__student {
+  background: #fff;
+  padding: 15px;
+}
+
+.form__body {
+  padding: 10px 30px;
+}
+.form__body .form__field_wrapper {
+  padding-bottom: 27px;
+}
+
+.form__header {
+  padding: 15px 30px;
+  border-bottom: 1px solid #ece9e9;
+  margin-bottom: 15px;
+}
+
+.form__header .header__image-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.form__body {
+  padding: 10px 30px;
+  border-bottom: 1px solid #ece9e9;
+  margin-bottom: 15px;
+}
+
+.form__body input {
+  border: 0;
+  background: #f3f6f8;
+  height: 47px;
+  color: #00123a;
+}
+
+.form__body label {
+  color: #00123a;
+}
+
+.form__body .form__field_wrapper {
+  padding-bottom: 27px;
+}
+
+.form__footer {
+  padding: 10px 30px;
+  text-align: right;
+}
+
+.form__header .header__image-container img {
+  height: 90px;
+  width: 90px;
+  object-fit: contain;
+  border-radius: 50%;
+  margin-bottom: 11px;
+}
+.form__header .header__image-container button {
+  background: #f2f3f3;
+}
+
+.StudentInfo .left__info {
+  background: #fff;
+  padding: 30px;
+  text-align: center;
+}
+
+.StudentInfo .left__info .image {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.StudentInfo .left__info .name,
+.StudentInfo .left__info .email {
+  margin-bottom: 30px;
+}
+
+.StudentInfo .left__info .email:last-child {
+  margin-bottom: 0;
+}
+
+.StudentInfo .left__info .image img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.StudentInfo .left__info .name span,
+.StudentInfo .left__info .email span,
+.StudentInfo .left__info .country span {
+  color: #999;
+  font-weight: 300;
+  font-size: 14px;
+}
+
+.StudentInfo .left__info .name h4, 
+.StudentInfo .left__info .email h6,
+.StudentInfo .left__info .country h6 {
+  margin-bottom: 0;
+}
+
+.StudentInfo .right__info_complete,
+.StudentInfo .notes__wrapper {
+  background: #fff;
+  padding: 30px;
+}
+
+.StudentInfo .notes__wrapper {
+  padding-top: 0;
+}
+
+.StudentInfo .right__info_complete {
+  margin-bottom: 30px;
+}
+
+.StudentInfo .right__info_complete p {
+  color: #999;
+  margin-bottom: 2rem;
+  font-weight: 300;
+}
+.StudentInfo .right__info_complete .bold__label {
+  font-weight: 500;
+}
+.StudentInfo .notes__wrapper table tr td {
+  color: #828282;
+  font-weight: 300;
+}
+.StudentInfo .notes__wrapper table tr th, .notes__wrapper table tr td {
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+.StudentInfo .notes__wrapper table tr th:last-child, .notes__wrapper table tr td:last-child {
+  text-align: right;
+}
+.StudentInfo .notes__wrapper table {
+  width: 100%;
+}
+
+.StudentInfo .right__info_complete .up {
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eeeeee;
+  margin-bottom: 35px;
+}
+
+.StudentInfo .action {
+  padding: 6px 0;
+}
+
+.StudentInfo .action .actions-wrapper {
+  text-align: right;
+}
+
+.StudentInfo .action .actions-wrapper button:first-child {
+  margin-right: 10px;
+}
+
+.CreateTab {
+  background: #fff;
+  padding: 30px;
+}
+
+.fieldActions {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+}
+
+.fieldArray button {
+  border: 0;
+}
+.fieldArray button:first-child {
+  margin-right: 4px;
+}
+.fieldArray {
+  padding: 12px;
+  background: #f2f3f3;
+}
+
+.fieldAddLists tr td:last-child {
+  text-align: right;
+}
+.fieldAddLists tr td {
+  border-bottom: 1px solid #ccc;
+  border-top: 1px solid #cccc;
+  padding: 5px;
+  font-size: 18px;
+}
+.fieldAddLists {
+  width: 100%;
+}
+
+.fieldAddLists tr td span {
+  font-size: 13px;
+  color: #a3a3a3;
+}
+
+.ecom__table {
+  background-color: #fff;
+  width: 100%;
+}
+.ecom__table tr:first-child th {
+  border-bottom: 2px solid #00123a;
+  padding: 15px 5px;
+  font-weight: 500;
+}
+
+.ecom__table tr th:not(:last-child), 
+.ecom__table tr td:not(:last-child) {
+  border-right: 1px solid #f2f3f3;
+}
+
+.ecom__table tr td {
+  font-weight: 300;
+  padding: 12px 5px;
+  vertical-align: initial;
+}
+
+.ecom__table tr td a {
+  border: 0;
+  font-size: 13px;
+  border-radius: 3px;
+  color: #000;
+  text-decoration: none;
+}
+
+.ecom__table tr td a.edit-btn {
+  background-color: orange;
+}
+
+.ecom__table tr td a.view-btn {
+  background-color: #f3f6f8;
+}
+
+.ecom__table tr td a:not(:last-child) {
+  margin-right: 3px;
+}
+
+.ecom__table tr:first-child th button svg {
+  font-size: 10px;
+  margin-left: 5px;
+}
+.ecom__table tr:first-child th button {
+  background: transparent;
+  padding: 0;
+  border: 0;
+  outline: none;
+  display: flex;
+  align-items: center;
+}
+
+.search-box select {
+  width: -webkit-fill-available;
+}
+
+.search-box form {
+  display: flex;
+  align-items: center;
+}
+
+.search-btn {
+  background: #00123a;
+  color: #fff;
+  width: -webkit-fill-available;
+}
+.search-btn:hover {
+  color: #fff;
+  opacity: 0.8;
+}
+
+.content-top {
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.StudentCreatePage .StudentInfo {
+  background: #fff;
+  padding: 30px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+.StudentCreatePage .PaymentInfo {
+  background: #fff;
+  padding: 30px;
+  border-radius: 4px;
+}
+
+.StudentCreatePage label {
+  color: #425260;
+  margin-bottom: 0;
+  font-weight: 400;
+}
+
+.StudentCreatePage form .form-control {
+  background-color: #f3f6f8;
+  border: none;
+  font-size: 17px;
+  color: #000;
+}
+
+.StudentCreatePage .create-student-form-btn-wrapper {
+    background: #fff;
+    padding: 10px;
+    margin-top: 15px;
+    border-radius: 4px;
+}
+
+/* .toast-create-student-success {
+  position: fixed;
+  right: 30px;
+  bottom: 30px;
+} */

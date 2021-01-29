@@ -1,0 +1,36 @@
+.student__status b span {
+  color: #000;
+  margin-right: 10px;
+}
+
+.student__status {
+  padding: 10px 0;
+}
+
+.statusSelectAll {
+    border: 0;
+    padding: 4px 11px;
+    border-radius: 30px;
+}
+
+.viewAllStatusBtn,
+.viewAllStatusBtn:hover,
+.viewAllStatusBtn:active {
+  margin-left: 10px;
+  color: #007bff;
+}
+
+.status__lists .status__list:last-child {
+  border-bottom: 0;
+}
+.status__lists .status__list {
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.status__lists .status__list span {
+  color: #000000;
+}

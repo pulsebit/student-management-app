@@ -1,0 +1,3 @@
+export const GET_CURRENT_USER = 'GET_CURRENT_USER'
+export const IS_AUTHENTICATE = 'IS_AUTHENTICATE'
+export const LOGOUT = 'LOGOUT'

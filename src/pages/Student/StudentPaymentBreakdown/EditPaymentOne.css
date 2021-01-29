@@ -1,0 +1,21 @@
+.table-form tr:last-child th {
+  border-bottom: none !important;
+}
+
+.due-color {
+  background-color: #545b621f;
+}
+
+.status-paid-color {
+  background: #dbeedf;
+}
+
+.status-cancelled-color {
+  background: #f8e3e5
+}
+
+.view-payment,
+.view-payment:hover {
+  color: #000;
+  text-decoration: none;
+}

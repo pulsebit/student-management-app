@@ -1,0 +1,111 @@
+.student_lists tr:not(:last-child) td {
+  border-bottom: 1px solid #f2f3f3;
+}
+.student_lists tr td:last-child {
+  text-align: right;
+  vertical-align: middle;
+}
+
+.studentListName {
+  font-size: 17px;
+  font-weight: 600;
+  color: #00123a;
+}
+
+.search__query-box {
+  display: flex;
+  width: 500px;
+}
+.search-box {
+  position: relative;
+}
+.search__query-box_expand {
+  padding: 15px;
+  background: #fff;
+  width: 100%;
+  box-shadow: 1px 1px 10px var(--shadow);
+  border-radius: 4px;
+  max-width: 390px;
+}
+
+.search__query-box_expand__qty > div,
+.search__query-box_expand__currency-paymentType,
+.search__query-box_expand__recurrence_amount > div {
+  display: flex;
+}
+.search__query-box_expand__currency-paymentType div {
+  width: 50%;
+}
+
+.breakdown-list:not(:last-child) {
+  border-bottom: 1px solid rgb(238, 238, 238);
+}
+
+.breakdown-list {
+  color: #00123a;
+  padding: 0px 10px 15px 0px;
+  font-weight: 300;
+}
+
+.custom_pagination button.active {
+  background: #00123a;
+  color: #fff;
+}
+.custom_pagination {
+  padding: 10px 0;
+  text-align: right;
+}
+
+.color-status {
+  height: 12px;
+  width: 12px;
+  border-radius: 50%;
+}
+.content-main table tr td:first-child, .content-main table tr th:first-child {
+  border-right: 0;
+  vertical-align: middle;
+  padding: 0 9px 0 12px;
+}
+
+.status_legend {
+  display: flex;
+}
+
+.status_legend__single_wrapper .status_legend__text {
+  font-size: 14px;
+  color: #6B7280;
+}
+.status_legend__single_wrapper {
+  display: flex;
+  align-items: center;
+}
+.status_legend__single_wrapper .status_legend__color {
+  width: 14px;
+  height: 14px;
+  margin-right: 6px;
+  border-radius: 50%;
+}
+.status_legend__single_wrapper:not(:last-child) {
+  margin-right: 18px;
+}
+
+.student_delete__btn {
+  background: #8B5CF6;
+  padding: 1px 10px;
+  font-size: 12px;
+  color: #fff;
+}
+
+.student_edit__btn {
+  background: #3B82F6;
+  padding: 1px 10px;
+  font-size: 12px;
+  color: #fff;
+}
+
+.student_edit__btn:hover,
+.student_delete__btn:hover {
+  color: #fff;
+  opacity: 0.8;
+}
+

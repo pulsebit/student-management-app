@@ -1,0 +1,42 @@
+.edit__info-btn {
+    color: #007bff;
+}
+.data_actions {
+  text-align: right;
+}
+
+.cancel__info-btn {
+  background: #f3f6f8;
+}
+
+.student_single__status {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  background: #fff;
+}
+
+.student_single__status_color {
+  width: 14px;
+  height: 14px;
+  margin-right: 10px;
+  border-radius: 50%;
+}
+
+.student_single__notes_action {
+  background: #fff;
+  padding: 5px;
+}
+.delete__student_profile_btn {
+  width: 100%;
+  height: 50px;
+}
+
+.btn.disabled, .btn:disabled {
+  opacity: .65;
+  cursor: not-allowed;
+}
+
+.table-payment-breakdown .clickable {
+  cursor: pointer;
+}

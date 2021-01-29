@@ -1,0 +1,13 @@
+.TagLists .tag__list_main {
+  display: inline;
+  background: #00123a;
+  margin-right: 10px;
+  padding: 9px 10px;
+  color: #fff;
+  margin-bottom: 10px;
+}
+.TagLists {
+  margin-top: 25px;
+  display: flex;
+  flex-wrap: wrap;
+}
