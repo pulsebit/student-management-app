@@ -98,7 +98,6 @@ const StudentList = () => {
   useEffect(() => {
     Axios.get(`/api/student/?${isFilterPage}${queryParams}`)
       .then(res => {
-        console.log(res.data.student)
         setAllDocsOfPage(res.data.allDocsOfPage)
         setAllDocs(res.data.count)
         setPerPage(res.data.perPage)
@@ -141,7 +140,7 @@ const StudentList = () => {
     <BaseLayout>
       <h2 className="title">Student Lists</h2>
       <div className="content-top">
-        {/* <div className="search-box"><StudentListsFilter/></div> */}
+        {/* <div className="search-box"></div><StudentListsFilter/></div> */}
         <div className="status_legend">
           {studentStatus && studentStatus.map((item, i) => (
             <div key={i} className="status_legend__single_wrapper">

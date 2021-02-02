@@ -1,0 +1,92 @@
+.payment-plans-wrapper {
+  background: #fff;
+  padding: 30px;
+  margin-bottom: 25px;
+}
+
+.payment-plans-wrapper a .plan-status {
+  border: 1px solid;
+  padding: 0 5px;
+  font-size: 11px;
+  margin-left: 7px;
+}
+
+.payment-plans-wrapper a .plan-status.active {
+  color: #399a4f;
+}
+
+.payment-plans-wrapper a .plan-status.on-hold {
+  color: #00123a;
+}
+
+.payment-plans-wrapper a .plan-status.cancelled {
+  color: #dc3545;
+}
+
+.payment-plans-wrapper a .plan-status.completed {
+  color: #0062CB;
+}
+
+.payment-plans-wrapper a {
+  color: #888f9e;
+  text-decoration: none;
+}
+
+.payment-plan-lists {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  padding: 6px 0;
+}
+
+.payment-plan-lists:not(:last-child) {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.title-heading {
+  display: flex;
+}
+
+.right-panel-slide {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: #00000014;
+  z-index: 9999;
+}
+
+.right-panel-content {
+  position: absolute;
+  right: 0;
+  width: 573px;
+  background: #ffff;
+  height: 100%;
+  overflow-y: auto;
+  transition: 0.2s width ease;
+}
+
+.close-panel-btn,
+.close-panel-btn:hover
+ {
+  font-size: 31px;
+  border: 0;
+  padding: 0 15px;
+  background: transparent;
+  color: #000;
+  text-decoration: none;
+}
+
+.panel-main-content-wrapper {
+  position: relative;
+  padding: 0 30px;
+}
+
+.right-panel-title {
+  display: flex;
+  align-items: center;
+  padding: 20px 10px 20px 20px;
+  justify-content: space-between;
+}

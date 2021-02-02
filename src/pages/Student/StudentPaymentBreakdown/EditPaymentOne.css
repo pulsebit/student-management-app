@@ -2,7 +2,7 @@
   border-bottom: none !important;
 }
 
-.due-color {
+/* .due-color {
   background-color: #545b621f;
 }
 
@@ -12,10 +12,31 @@
 
 .status-cancelled-color {
   background: #f8e3e5
-}
+} */
 
 .view-payment,
 .view-payment:hover {
-  color: #000;
+  color: #545b62;
   text-decoration: none;
+  font-size: 14px;
+}
+
+.table-payment-breakdown tbody tr:nth-child(odd) {
+  background: #f3f6f87d;
+}
+
+.tab-wrapper {
+  display: flex;
+  background: #f2f3f3;
+}
+
+.tab-wrapper a {
+  padding: 13px;
+  text-decoration: none;
+  color: #00123a;
+}
+
+.tab-wrapper a.link-payment-lists {
+  background: #8B5CF6;
+  color: #fff;
 }

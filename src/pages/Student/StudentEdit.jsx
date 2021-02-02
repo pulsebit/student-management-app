@@ -1,10 +1,11 @@
 import BaseLayout from 'components/BaseLayout'
 import React, {useState, useCallback, useEffect} from 'react'
-import { connect } from 'react-redux'
+import { connect, useSelector } from 'react-redux'
 import axios from 'axios'
 import { useHistory, useParams } from 'react-router-dom'
 import BackButton from 'statelessComponent/BackButton'
 import { currencies, inputTypeDateValue, studentStatus } from 'helpers'
+import Axios from 'axios'
 
 export const StudentEdit = () => {
   const [firstName, setFirstName] = useState('')
@@ -19,7 +20,7 @@ export const StudentEdit = () => {
   const [phone, setPhone] = useState('') 
   const [formBtnText, setFormText] = useState('Submit')
   const [disableSubmitBtn, setDisableSubmitBtn] = useState(false)
-  const [depositAmount, setDepositAmount] = useState()
+  const [depositAmount, setDepositAmount] = useState('0')
   const [depositPaidDate, setDepositPaidDate] = useState('')
   const [currency, setCurrency] = useState('')
   const history = useHistory()
@@ -27,6 +28,8 @@ export const StudentEdit = () => {
   const [loading, setLoading] = useState(false)
   const [paymentPlanId, setPaymentPlanId] = useState('')
   const [paymentDateStart, setPaymentDateStart] = useState('')
+  const {plans} = useSelector(state => state.planReducer)
+  const [paymentPlans, setPaymentPlans] = useState([])
 
   const handleSubmit = useCallback((e) => {
     e.preventDefault()
@@ -55,13 +58,12 @@ export const StudentEdit = () => {
 
 
   useEffect(() => {
-    const unsubscribe = () => {
-      setLoading(true)
-      axios.get(`/api/student/${studentID}`)
-        .then(res => {
+    let unsubscribe = false
+    axios.get(`/api/student/${studentID}`)
+      .then(res => {
+        const data = res.data.student
+        if (!unsubscribe) {
           setLoading(false)
-          const data = res.data.student
-          console.log(data, 'data')
           setFirstName(data.firstName || '')
           setLastName(data.lastName || '')
           setEmail(data.email || '')
@@ -77,30 +79,47 @@ export const StudentEdit = () => {
           setPhone(data.phone || '')
           setPaymentPlanId(data.paymentInfo.paymentPlanId)
           setPaymentDateStart(inputTypeDateValue(data.paymentInfo.paymentDateStart))
-        })
-        .catch(err => {
-          setLoading(true)
-          console.log(err)
-        })
+        }
+      })
+      .catch(err => {
+        if (!unsubscribe) setLoading(true)
+        console.log(err)
+      })
+      
+    return () => {
+      unsubscribe = true
     }
-    unsubscribe()
-    
-    return () => unsubscribe()
   }, [studentID])
 
 
   useEffect(() => {
-    if (
-      firstName === '' || lastName === '' || 
-      email === '' || depositAmount === 0 ||
-      joinedDate === '' || paymentStatus === ''
-    ) {
-      setDisableSubmitBtn(true)
+    let unsubscribe = false
+    if (plans.length) {
+      if (!unsubscribe) setPaymentPlans(plans)
     } else {
-      setDisableSubmitBtn(false)
+      Axios.get(`/api/plan`)
+        .then(res => {
+          if (!unsubscribe) setPaymentPlans(res.data.plans)
+        })
+        .catch(err => console.log(err))
     }
-  }, [firstName, lastName, email, 
-    joinedDate, paymentStatus, depositAmount])
+    return () => {
+      unsubscribe = true
+    }
+  }, [plans])
+
+
+  useEffect(() => {
+    let unsubscribe = false
+    if (firstName === '' || lastName === '' || email === '' || depositAmount === 0 || joinedDate === '' || paymentStatus === '') {
+      if (!unsubscribe) setDisableSubmitBtn(true)
+    }else {
+      if (!unsubscribe) setDisableSubmitBtn(false)
+    }
+    return () => {
+      unsubscribe = true
+    }
+  }, [firstName, lastName, email, joinedDate, paymentStatus, depositAmount])
 
   
   if (loading) {
@@ -205,6 +224,32 @@ export const StudentEdit = () => {
                       <input type="date" className="form-control form-control-lg app-input"
                         value={depositPaidDate}
                         onChange={e => setDepositPaidDate(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="row">
+                  <div className="col-md-6">
+                    <div className="form-group">
+                      <label>Payment Plan</label>
+                      <select className="form-control form-control-lg app-input"
+                        value={paymentPlanId}
+                        onChange={e => setPaymentPlanId(e.target.value)}
+                      >
+                        <option value=""></option>
+                        {paymentPlans && paymentPlans.map((item, i) => (
+                          <option key={i} value={item._id}>{item.resultName}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="col-md-6">
+                    <div className="form-group">
+                      <label>Payment Date Start</label>
+                      <input type="date" className="form-control form-control-lg app-input"
+                        value={paymentDateStart}
+                        onChange={e => setPaymentDateStart(e.target.value)}
                       />
                     </div>
                   </div>

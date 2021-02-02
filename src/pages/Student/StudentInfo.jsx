@@ -11,6 +11,7 @@ import StudentPaymentInfo from './StudentPaymentInfo'
 import StudentProfileInfo from './StudentProfileInfo'
 import { studentStatus } from 'helpers'
 import StudentPaymentBreakdown from './StudentPaymentBreakdown'
+import StudentPlans from './StudentPlans'
 
 function StudentInfo() {
   const {studentID} = useParams()
@@ -45,18 +46,24 @@ function StudentInfo() {
   }
 
   useEffect(() => {
-    const unsubscribe = Axios.get(`/api/student/${studentID}`)
+    let unsubscribe = false
+    Axios.get(`/api/student/${studentID}`)
       .then(res => {
-        setStudentInfoSingle(res.data.student)
-        dispatch({
-          type: 'ALL_NOTES_BY_STUDENT', 
-          payload: {
-            data: res.data.student.notes
-          }
-        })
+        if (!unsubscribe) {
+          setStudentInfoSingle(res.data.student)
+          dispatch({
+            type: 'ALL_NOTES_BY_STUDENT', 
+            payload: {
+              data: res.data.student.notes
+            }
+          })
+        }
+        
       })
       .catch(err => console.log(err))
-    return () => unsubscribe
+    return () => {
+      unsubscribe = true
+    }
   }, [studentID, dispatch])
 
   if (Object.keys(studentInfoSingle).length === 0) {
@@ -109,10 +116,14 @@ function StudentInfo() {
           </div>
           <div className="col-md-9">
             {getStatusColor(studentInfoSingle.paymentInfo.paymentStatus)}
+
             <StudentPaymentInfo payment={studentInfoSingle.paymentInfo}/>
+
+            <StudentPlans studentId={studentID} />
+
             {/* <AddNotesForm studentId={'hqS2sbuGBT6bGx2XzQrg'}/>
             <StudentNotes studentId={'hqS2sbuGBT6bGx2XzQrg'}/> */}
-            <StudentPaymentBreakdown />
+            <StudentPaymentBreakdown paymentPlanId={studentInfoSingle.paymentInfo.paymentPlanId} />
           </div>
         </div>
       </div>

@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react'
-import { connect } from 'react-redux'
+import { connect, useDispatch, useSelector } from 'react-redux'
 import { FaPen, FaPlus } from "react-icons/fa"
 import { Link, useRouteMatch } from 'react-router-dom'
 import Axios from 'axios'
@@ -7,18 +7,32 @@ import Axios from 'axios'
 export const PlanLists = () => {
   const {url} = useRouteMatch()
   const [allPlans, setAllPlans] = React.useState(null)
+  const dispatch = useDispatch()
+  const {plans} = useSelector(state => state.planReducer)
 
   useEffect(() => {
     let isCancelled = false
-    Axios.get('/api/plan')
-      .then(res => {
-        if (!isCancelled) setAllPlans(res.data.plans)
-      })
-      .catch(err => console.log(err))
+    if (plans.length) {
+      setAllPlans(plans)
+    } else {
+      Axios.get('/api/plan')
+        .then(res => {
+          if (!isCancelled) {
+            setAllPlans(res.data.plans)
+            dispatch({
+              type: 'ALL_PLANS',
+              payload: {
+                data: res.data.plans
+              }
+            })
+          }
+        })
+        .catch(err => console.log(err))
+    }
     return () => {
       isCancelled = true
     }
-  }, [])
+  }, [dispatch, plans])
 
 
   if (allPlans === null) {

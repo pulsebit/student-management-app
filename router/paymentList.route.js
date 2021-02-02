@@ -36,4 +36,13 @@ router.post('/update', (req, res) => {
   })
 })
 
+router.post('/new-additional-payment', (req, res) => {
+  const {paymentData, studentId} = req.body
+  new PaymentList({...paymentData, studentId: new ObjectId(studentId)})
+    .save((err, saved) => {
+      if (err) return res.sendStatus(500)
+      res.send(saved)
+    })
+})
+
 module.exports = router

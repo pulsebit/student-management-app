@@ -255,4 +255,39 @@ router.get('/paymentId/:pid', (req, res) => {
 })
 
 
+router.post('/add_new_and_hold_the_current_plan/:studentId/:currentStudentPaymentId', (req, res) => {
+  const {studentId, currentStudentPaymentId} = req.params
+  const {depositAmount, currency, depositPaidDate, paymentDateStart, paymentPlanId} = req.body
+  Student.findById(studentId, (err, student) => {
+    if (err) return res.sendStatus(500)
+    student.paymentPlans.push({
+      depositAmount, 
+      currency, 
+      depositPaidDate, 
+      paymentDateStart, 
+      paymentPlanId,
+      status: 'Active',
+    })
+    const save = student.save()
+    if (save) {
+      Student.findOneAndUpdate({
+        'paymentPlans._id': currentStudentPaymentId
+      }, {
+        'paymentPlans.$.status': 'On-hold'
+      }, (err, updated) => {
+        res.send(updated)
+      })
+    }
+  })
+})
+
+
+router.get('/all_payment_plans_by_student_id/:studentId', (req, res) => {
+  const {studentId} = req.params
+  Student.findById(studentId, (err, student) => {
+    if (err) return res.sendStatus(500)
+    res.send(student.paymentPlans)
+  })
+})
+
 module.exports = router

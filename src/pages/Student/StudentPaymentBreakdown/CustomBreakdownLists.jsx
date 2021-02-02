@@ -2,22 +2,9 @@ import React from 'react'
 import { connect, useSelector } from 'react-redux'
 import {Link} from 'react-router-dom'
 
-export const PaymentLists = ({studentId}) => {
+export const CustomBreakdownLists = ({studentId}) => {
   const [allPaymentBd, setAllPaymentBd] = React.useState(null)
   const {paymentLists} = useSelector(state => state.paymentListsReducer)
-
-  const numText = (num) => {
-    switch (num) {
-      case 1:
-        return num + 'st'
-      case 2: 
-        return num + 'nd'
-      case 3: 
-        return num + 'rd'
-      default:
-        return num + 'th'
-    }
-  }
 
   React.useEffect(() => {
     if (!paymentLists) {
@@ -25,7 +12,7 @@ export const PaymentLists = ({studentId}) => {
     } else {
       const newPaymentLists = []
       paymentLists.forEach(item => {
-        if (item.category !== 'custom') {
+        if (item.category === 'custom') {
           newPaymentLists.push(item)
         }
       })
@@ -51,9 +38,7 @@ export const PaymentLists = ({studentId}) => {
       <table className="table table-payment-breakdown">
         <thead>
           <tr>
-            <th></th>
             <th>Amount</th>
-            <th>Due Date</th>
             <th>Date Paid</th>
             <th>Status</th>
             <th></th>
@@ -64,17 +49,7 @@ export const PaymentLists = ({studentId}) => {
             <tr key={i}>
               <td>
                 <Link className="view-payment" to={`/edit_payment/${item._id}`}>
-                    {numText(i + 1)} Payment
-                </Link>
-              </td>
-              <td>
-                <Link className="view-payment" to={`/edit_payment/${item._id}`}>
                     {item.amount} {item.currency}
-                </Link>
-              </td>
-              <td>
-                <Link className="view-payment" to={`/edit_payment/${item._id}`}>
-                    {new Date(item.dueDate).toLocaleDateString()}
                 </Link>
               </td>
               <td>
@@ -100,12 +75,6 @@ export const PaymentLists = ({studentId}) => {
   )
 }
 
-const mapStateToProps = (state) => ({
-  
-})
-
-const mapDispatchToProps = {
-  
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(React.memo(PaymentLists))
+const mapStateToProps = (state) => ({})
+const mapDispatchToProps = {}
+export default connect(mapStateToProps, mapDispatchToProps)(React.memo(CustomBreakdownLists))

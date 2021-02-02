@@ -1,12 +1,13 @@
 const mongoose = require('mongoose')
 
-const notesSchema = new mongoose.Schema({
-  note: String
-}, { timestamps: true, strict: false })
-
-const breakdownSchema = new mongoose.Schema({
+const paymentPlans = new mongoose.Schema({
+  paymentPlanId: String,
+  depositAmount: Number,
+  currency: String,
+  depositPaidDate: Date,
+  paymentDateStart: Date,
+  paymentMethod: String,
   status: String,
-  dueDate: Date,
 }, { timestamps: true, strict: false })
 
 const paymentSchema = new mongoose.Schema({
@@ -15,7 +16,6 @@ const paymentSchema = new mongoose.Schema({
   depositPaidDate: Date,
   paymentDateStart: Date,
   paymentPlanId: String,
-  paymentStatus: String,
   salesGuy: String,
   paymentMethod: String,
   contractSigned: String,
@@ -30,8 +30,8 @@ const schema = new mongoose.Schema({
   country: String,
   photoUrl: String,
   paymentInfo: paymentSchema,
-  notes: [notesSchema],
-  paymentBreakdown: [breakdownSchema],
+  paymentStatus: String,
+  paymentPlans: [paymentPlans],
 }, { timestamps: true, strict: false })
 
 module.exports = mongoose.model('Student', schema)

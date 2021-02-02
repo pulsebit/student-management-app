@@ -85,12 +85,15 @@ export const CreateStudent = () => {
 
 
   useEffect(() => {
-    const unsubscribe = axios.get('/api/plan')
-                          .then(res => {
-                            setPaymentPlans(res.data.plans)
-                          })
-                          .catch(err => console.log(err))
-    return () => unsubscribe
+    let unsubscribe = false
+    axios.get('/api/plan')
+      .then(res => {
+        if(!unsubscribe) setPaymentPlans(res.data.plans)
+      })
+      .catch(err => console.log(err))
+    return () => {
+      unsubscribe = true
+    }
   }, [])
 
 

@@ -19,6 +19,7 @@ export const EditPaymentOne = ({studentId, location}) => {
   const dispatch = useDispatch()
   const [loading, setLoading] = useState(false)
   const {user} = useSelector(state => state.auth.isAuthenticated)
+  const [isCustomAdd, setIsCustomAdd] = useState(false)
 
   const handleUpdate = useCallback((e) => {
     e.preventDefault()
@@ -53,13 +54,18 @@ export const EditPaymentOne = ({studentId, location}) => {
       setLoading(true)
       Axios.get(`/api/paymentLists/byPaymentId/${paymentId}`)
         .then(res => {
-          setLoading(false)
-          setAmount(res.data.amount)
-          setCurrency(res.data.currency)
-          setDueDate(state => state = inputTypeDateValue(res.data.dueDate))
-          setDatePaid(state => state = inputTypeDateValue(res.data.datePaid))
-          setStatus(res.data.status)
-          setNotes(res.data.notes || '')
+          if (res.data) {
+            setLoading(false)
+            setAmount(res.data.amount)
+            setCurrency(res.data.currency)
+            setDueDate(state => state = inputTypeDateValue(res.data.dueDate))
+            setDatePaid(state => state = inputTypeDateValue(res.data.datePaid))
+            setStatus(res.data.status)
+            setNotes(res.data.notes || '')
+            if (res.data.category === 'custom') {
+              setIsCustomAdd(true)
+            }
+          }
         })
         .catch(err => {
           setLoading(true)
@@ -67,7 +73,7 @@ export const EditPaymentOne = ({studentId, location}) => {
         })
     }
     unsubscribe()
-    return () => unsubscribe()
+    return () => {}
   }, [paymentId])
 
   if (loading) {
@@ -110,15 +116,17 @@ export const EditPaymentOne = ({studentId, location}) => {
                   </select>
                 </th>
               </tr>
-              <tr>
-                <th className="text-right">due date</th>
-                <th>
-                  <input type="date" className="form-control app-input"
-                    value={dueDate}
-                    required
-                    onChange={e => setDueDate(e.target.value)} />
-                </th>
-              </tr>
+              {!isCustomAdd && (
+                <tr>
+                  <th className="text-right">due date</th>
+                  <th>
+                    <input type="date" className="form-control app-input"
+                      value={dueDate}
+                      required
+                      onChange={e => setDueDate(e.target.value)} />
+                  </th>
+                </tr>
+              )}
               <tr>
                 <th className="text-right">date paid</th>
                 <th>

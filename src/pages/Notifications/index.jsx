@@ -9,17 +9,17 @@ export const Notifications = () => {
   const [notifications, setNotifications] = React.useState(null)
 
   React.useEffect(() => {
-    const unsubscribe = (
-      Axios.get('/api/notifications/lists')
-        .then(res => {
-          if (res.data.length) {
-            setNotifications(res.data)
-            console.log(res.data)
-          }
-        })
-        .catch(err => console.log(err))
-    )
-    return () => unsubscribe
+    let unsubscribe = false
+    Axios.get('/api/notifications/lists')
+      .then(res => {
+        if (res.data.length) {
+          if (!unsubscribe) setNotifications(res.data)
+        }
+      })
+      .catch(err => console.log(err))
+    return () => {
+      unsubscribe = true
+    }
   }, [])
 
   return (
@@ -40,7 +40,7 @@ export const Notifications = () => {
           </thead>
           <tbody>
             {notifications && notifications.map((item, i) => (
-              <tr>
+              <tr key={i}>
                 <td>
                   <Name studentId={item.studentId} />
                 </td>
