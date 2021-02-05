@@ -15,7 +15,7 @@ export default memo(function index() {
           </NavLink>
         </li>
         <li className="menu__list-item">
-          <NavLink activeClassName="active" to="/notifications" className="menu__link--sublist">
+          <NavLink activeClassName="active" to="/all-payment-dues" className="menu__link--sublist">
             <FaList/>
             <span>All payment dues</span>
           </NavLink>

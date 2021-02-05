@@ -1,11 +1,14 @@
 import Axios from 'axios'
 import { currencies, inputTypeDateValue } from 'helpers'
+import { syncPaymentLists } from 'helpers/syncStore'
 import React, {useState, useCallback, useEffect} from 'react'
-import { connect, useDispatch, useSelector} from 'react-redux'
+import { connect, useSelector} from 'react-redux'
 import { useHistory, useParams, Link } from 'react-router-dom'
+import { PlanName } from '../StudentPlans/PlanName'
+import RightPanelSlide from '../StudentPlans/RightPanelSlide'
 import './EditPaymentOne.css'
 
-export const EditPaymentOne = ({studentId, location}) => {
+export const EditPaymentOne = ({studentId}) => {
   const [amount, setAmount] = useState(0)
   const [currency, setCurrency] = useState('USD')
   const [dueDate, setDueDate] = useState('')
@@ -16,10 +19,9 @@ export const EditPaymentOne = ({studentId, location}) => {
   const [disableBtn, setDisableBtn] = useState(false)
   const {paymentId} = useParams()
   const history= useHistory()
-  const dispatch = useDispatch()
   const [loading, setLoading] = useState(false)
   const {user} = useSelector(state => state.auth.isAuthenticated)
-  const [isCustomAdd, setIsCustomAdd] = useState(false)
+  const [paymentList, setPaymentLists] = useState({})
 
   const handleUpdate = useCallback((e) => {
     e.preventDefault()
@@ -30,14 +32,9 @@ export const EditPaymentOne = ({studentId, location}) => {
     Axios.post(`/api/paymentLists/update`, payload)
       .then(res => { 
         setTimeout(() => {
-          dispatch({
-            type: 'ALL_BD_PAYMENT',
-            payload: {
-              data: res.data
-            }
-          })
-          history.push('/')
-        }, 400)
+          syncPaymentLists(studentId, res.data.paymentPlanId)
+          history.replace('/')
+        }, 200)
         if (!unmount) setDisableBtn(false)
       })
       .catch(err => {
@@ -47,14 +44,22 @@ export const EditPaymentOne = ({studentId, location}) => {
     return () => {
       unmount = true
     }
-  }, [history, paymentId, currency, datePaid, dueDate, notes, status, amount, dispatch, user.id])
+  }, [history, paymentId, currency, datePaid, dueDate, notes, status, amount, user.id, studentId])
+
+  const handleSetStatus = useCallback((value) => {
+    setStatus(value)
+    if (value === 'Cancelled') {
+      setDatePaid('')
+    } 
+  }, [])
 
   useEffect(() => {
-    const unsubscribe = () => {
-      setLoading(true)
-      Axios.get(`/api/paymentLists/byPaymentId/${paymentId}`)
-        .then(res => {
-          if (res.data) {
+    let unsubscribe = false
+    if (!unsubscribe) setLoading(true)
+    Axios.get(`/api/paymentLists/byPaymentId/${paymentId}`)
+      .then(res => {
+        if (res.data) {
+          if (!unsubscribe) {
             setLoading(false)
             setAmount(res.data.amount)
             setCurrency(res.data.currency)
@@ -62,35 +67,49 @@ export const EditPaymentOne = ({studentId, location}) => {
             setDatePaid(state => state = inputTypeDateValue(res.data.datePaid))
             setStatus(res.data.status)
             setNotes(res.data.notes || '')
-            if (res.data.category === 'custom') {
-              setIsCustomAdd(true)
-            }
           }
-        })
-        .catch(err => {
-          setLoading(true)
-          console.log(err)
-        })
+        }
+      })
+      .catch(err => {
+        if (!unsubscribe) setLoading(true)
+        console.log(err)
+      })
+    return () => {
+      unsubscribe = true
     }
-    unsubscribe()
-    return () => {}
+  }, [paymentId])
+
+  useEffect(() => {
+    let unsubscribe = false
+    Axios.get(`/api/paymentLists/${paymentId}`)
+      .then(res => {
+        if (!unsubscribe) setPaymentLists(res.data)
+      })
+      .catch(err => console.log(err))
+    return () => {
+      unsubscribe = true
+    }
   }, [paymentId])
 
   if (loading) {
     return (
-      <div className="m-auto col-md-6">
-        <div className="table_wrapper table-responsive pt-3 pb-3">
-          <span>Loading...</span>
-        </div>
-      </div>
+      <RightPanelSlide title="Loading...">
+      </RightPanelSlide>
+    )
+  }
+
+  const title = () => {
+    return (
+      <>
+        Edit Payment from <span style={{color: 'rgb(53 142 73)'}}><PlanName planId={paymentList && paymentList.paymentPlanId} /></span> Plan
+      </>
     )
   }
 
   return (
-    <div className="m-auto col-md-6">
-      <div className="table_wrapper table-responsive">
+    <RightPanelSlide title={title()}>
+      <div className="table_wrapper table-responsive" style={{boxShadow: 'none'}}>
         <form onSubmit={handleUpdate}>
-          <h4 className="text-center mb-3 mt-3">Edit Payment</h4>
           <table className="table table-form">
             <thead>
               <tr>
@@ -116,23 +135,19 @@ export const EditPaymentOne = ({studentId, location}) => {
                   </select>
                 </th>
               </tr>
-              {!isCustomAdd && (
-                <tr>
-                  <th className="text-right">due date</th>
-                  <th>
-                    <input type="date" className="form-control app-input"
-                      value={dueDate}
-                      required
-                      onChange={e => setDueDate(e.target.value)} />
-                  </th>
-                </tr>
-              )}
+              <tr>
+                <th className="text-right">due date</th>
+                <th>
+                  <input type="date" className="form-control app-input"
+                    value={dueDate}
+                    onChange={e => setDueDate(e.target.value)} />
+                </th>
+              </tr>
               <tr>
                 <th className="text-right">date paid</th>
                 <th>
                   <input type="date" className="form-control app-input"
                     value={datePaid}
-                    required
                     onChange={e => setDatePaid(e.target.value)} />
                 </th>
               </tr>
@@ -142,7 +157,7 @@ export const EditPaymentOne = ({studentId, location}) => {
                   <select className="form-control app-input"
                     value={status}
                     required
-                    onChange={e => setStatus(e.target.value)} >
+                    onChange={e => handleSetStatus(e.target.value)} >
                     <option value=""></option>
                     <option value="Pending">Pending</option>
                     <option value="Paid">Paid</option>
@@ -170,7 +185,7 @@ export const EditPaymentOne = ({studentId, location}) => {
           </table>
         </form>
       </div>
-    </div>
+    </RightPanelSlide>
   )
 }
 

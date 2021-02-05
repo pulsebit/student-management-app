@@ -1,11 +1,10 @@
-import React, {useEffect} from 'react'
-import { connect, useDispatch } from 'react-redux'
-import { HashRouter, Route, useParams, NavLink, useLocation } from 'react-router-dom'
-import BreakdownLists from './BreakdownLists'
+import React from 'react'
+import { connect } from 'react-redux'
+import { HashRouter, Route, useParams } from 'react-router-dom'
 import CustomBreakdownLists from './CustomBreakdownLists'
 import EditPaymentOne from './EditPaymentOne'
 import CreatePayment from './CreatePayment'
-import Axios from 'axios'
+import { PaymentPlanAndPaymentListSingleDefaultView } from './PaymentPlanAndPaymentListSingleDefaultView'
 
 const style = {
     background: '#fff',
@@ -14,52 +13,24 @@ const style = {
 
 const StudentPaymentBreakdown = ({paymentPlanId}) => {
   const {studentID} = useParams()
-  const {hash} =  useLocation()
-  const dispatch = useDispatch()
-
-  useEffect(() => {
-    Axios.get(`/api/paymentLists/byStudent/${studentID}`)
-      .then(res => {
-        if (res.data.length) {
-          dispatch({
-            type: 'ALL_PAYMENT_LISTS', 
-            payload: {
-              data: res.data
-            }
-          })
-        } 
-      })
-
-    return () => {}
-  }, [studentID, dispatch])
 
   return (
     <div className="StudentPaymentBreakdown mb-4" style={style}>
 
-      <HashRouter basename="/">
-      <div className="tab-wrapper">
-        <NavLink 
-          className={hash === '#/' ? 'link-payment-lists' : ''} 
-          to="/">Payment Lists</NavLink>
-        <NavLink 
-          className={hash === '#/new_payment' ? 'link-payment-lists' : ''} 
-          to="/new_payment">New Payment</NavLink>
-      </div>
+      <HashRouter basename="/">  
+        <PaymentPlanAndPaymentListSingleDefaultView studentId={studentID} />
 
-        <div className="pt-4 pb-4">
-          <Route exact path={`/edit_payment/:paymentId/`}>
-            <EditPaymentOne studentId={studentID} />
-          </Route>
-          <Route exact path={`/new_payment`}>
-            <CreatePayment studentId={studentID} paymentPlanId={paymentPlanId} />
-          </Route>
-          <Route exact path={`/custom_payment_lists`}>
-            <CustomBreakdownLists studentId={studentID} />
-          </Route>
-          <Route exact path="/">
-            <BreakdownLists studentId={studentID} />
-          </Route>
-        </div>
+        <Route exact path={`/edit_payment/:paymentId/`}>
+          <EditPaymentOne studentId={studentID} />
+        </Route>
+
+        <Route exact path={`/new_payment/:paymentPlanId`}>
+          <CreatePayment studentId={studentID} paymentPlanId={paymentPlanId} />
+        </Route>
+        
+        <Route exact path={`/custom_payment_lists`}>
+          <CustomBreakdownLists studentId={studentID} />
+        </Route>
       </HashRouter>
 
     </div>

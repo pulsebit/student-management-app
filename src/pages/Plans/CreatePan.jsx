@@ -15,51 +15,44 @@ export const CreatePan = () => {
   const history = useHistory()
   const [disabledSubmit, setDisableSubmit] = useState(false)
 
-  const [additionalPayment, setAdditionalPayment] = useState([])
   const [showForm, setShowForm] = useState(false)
   const [plusAmount, setPlusAmount] = useState('')
   const [plusCurrency, setPlusCurrency] = useState(currencies[0])
   const [plusQty, setPlusQty] = useState('')
   const [disAbledPlusBtn, setDisAbledPlusBtn] = useState(false)
 
-  const handlePlusPayment = useCallback(() => {
-    setAdditionalPayment(state => [...state, {id: state.length + 1, plusAmount, plusCurrency, plusQty,}])
-    setPlusAmount('')
-    setPlusCurrency(currencies[0])
-    setPlusQty('')
-    if (resultName !== '') {
-      setResultName(state => state = `${state} and ${plusQty} x ${plusAmount} ${plusCurrency}`)
-    }
-    return () => {}
-  }, [plusAmount, plusCurrency, plusQty, resultName])
-
-  const handleDeleteAdditionalPayment = useCallback((e, id) => {
-    setAdditionalPayment(state => state.filter(item => item.id !== id))
-  }, [])
-
   const handleSubmit = useCallback((e) => {
     setDisableSubmit(true)
     e.preventDefault()
-    const payload = {amount, currency, quantity, recurrence, resultName}
+    const additionalPayment = {
+      amount: plusAmount, 
+      currency: plusCurrency, 
+      quantity: plusQty,
+      resultName: `and ${plusQty} x ${plusAmount} ${plusCurrency}`
+    }
+    const payload = {amount, currency, quantity, recurrence, resultName, and: additionalPayment}
+    console.log('payload', payload)
     Axios.post('/api/plan/create', payload)
       .then(res => {
         const data = res.data.plan
         if (data) {
-          setTimeout(() => {
-            history.push('/plans')
-          }, 300)
+          console.log('data', data)
+          // setTimeout(() => {
+          //   history.push('/plans')
+          // }, 300)
         }
       })
       .catch(err => console.log(err))
     return () => {}
-  }, [amount, currency, quantity, recurrence, resultName, history])
+  }, [amount, currency, quantity, recurrence, resultName, history, plusAmount, plusCurrency, plusQty])
 
   useEffect(() => {
     if (amount !== '' && quantity !== '') 
       setResultName(`${amount} ${currency} × ${quantity} ${recurrence}`)
-    else setResultName('')
+    if (plusQty !== '' && plusAmount !== '' && plusCurrency !== '')
+      setResultName(state => `${state} and ${plusQty} × ${plusAmount} ${plusCurrency}`)
     return () => {}
-  }, [amount, currency, quantity, recurrence])
+  }, [amount, currency, quantity, recurrence, plusAmount, plusCurrency, plusQty])
 
   useEffect(() => {
     if (amount === '' || amount === 0 || currency === '' || quantity === '' || recurrence === '') {
@@ -150,16 +143,10 @@ export const CreatePan = () => {
               onClick={() => setShowForm(true)}
             >Add More Payment</button>
           )}
-
-          {additionalPayment && additionalPayment.map((item, i) => (
-            <div className="lists-of-newly-add-payment" key={i}>
-              <span>and {item.plusQty} x {item.plusAmount} {item.plusCurrency}</span>
-              <button type="button" onClick={(e) => handleDeleteAdditionalPayment(e, item.id)}>&times;</button>
-            </div>
-          ))}
           
           {showForm &&  (
             <div className="additional-payment-wrapper">
+              Plus: 
               <div className="additional-payment">
                 <input 
                   className="form-control app-input et" 
@@ -185,12 +172,6 @@ export const CreatePan = () => {
                   value={plusQty}
                   onChange={e => setPlusQty(e.target.value)}
                 />
-                <button 
-                  type="button" 
-                  className="btn app-primary-btn et"
-                  onClick={handlePlusPayment}
-                  disabled={disAbledPlusBtn}
-                >&#43;</button>
               </div>
             </div>
           )}

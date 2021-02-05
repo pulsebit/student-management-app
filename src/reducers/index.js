@@ -7,6 +7,8 @@ import {tagReducer} from './tag'
 import {planReducer} from './plan'
 import {paymentBDReducer} from './paymentBD'
 import {paymentListsReducer} from './paymentLists'
+import {paymentPlanByStudent} from './paymentPlanByStudent'
+import {loadingPaymentList} from './loadingPaymentList'
 
 
 export default combineReducers({
@@ -18,5 +20,7 @@ export default combineReducers({
   tagReducer,
   planReducer,
   paymentBDReducer,
-  paymentListsReducer
+  paymentListsReducer,
+  paymentPlanByStudent,
+  loadingPaymentList
 })

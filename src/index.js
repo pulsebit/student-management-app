@@ -9,8 +9,11 @@ import {createStore} from 'redux'
 import rootReducer from './reducers'
 import * as actions from './actions'
 import {onAuthStateChanged} from './helpers'
+import { syncAllPlans } from 'helpers/syncStore';
 
-const store = createStore(rootReducer)
+export const store = createStore(rootReducer)
+
+syncAllPlans()
 
 onAuthStateChanged((isAuthenticated) => {
   store.dispatch({type: actions.IS_AUTHENTICATE, isAuthenticated})

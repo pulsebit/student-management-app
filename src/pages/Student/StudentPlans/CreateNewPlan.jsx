@@ -5,10 +5,9 @@ import Axios from 'axios'
 import { currencies, inputTypeDateValue } from 'helpers'
 import { useHistory } from 'react-router-dom'
 import { RRule, RRuleSet } from 'rrule'
-import PlanName from './PlanName'
 import { syncAllPaymentPlanByStudent } from 'helpers/syncStore'
 
-export const CreateAndHoldCurrentPlan = ({studentId, currentPaymentPlanId}) => {
+export const CreateNewPlan = ({studentId}) => {
   const {plans} = useSelector(state => state.planReducer)
   const [allPlans, setAllPlans] = React.useState([])
   const [newPlan, setNewPlan] = React.useState('')
@@ -25,7 +24,6 @@ export const CreateAndHoldCurrentPlan = ({studentId, currentPaymentPlanId}) => {
     const yearUTC = new Date(paymentDateStart).getUTCFullYear()
     const dayUTC = new Date(paymentDateStart).getUTCDate()
     const monthUTC = new Date(paymentDateStart).getUTCMonth()
-    const count = singlePlan.and ? parseInt(singlePlan.quantity) + 1 : parseInt(singlePlan.quantity)
     let options = {freq: RRule.WEEKLY}
     if (singlePlan.recurrence === 'Weekly')
       options = {freq: RRule.WEEKLY}
@@ -35,17 +33,17 @@ export const CreateAndHoldCurrentPlan = ({studentId, currentPaymentPlanId}) => {
       options = {freq: RRule.MONTHLY} 
     rruleSet.rrule(new RRule({
       ...options,
-      count: count || 0,
+      count: singlePlan.quantity || 0,
       dtstart: new Date(Date.UTC(yearUTC, monthUTC, dayUTC, 0, 0))
     }))
     return rruleSet.all().map(date => {
       return {dueDate: inputTypeDateValue(date)}
     })
-  }, [rruleSet, singlePlan.quantity, singlePlan.recurrence, paymentDateStart, singlePlan.and])
+  }, [paymentDateStart, rruleSet, singlePlan.quantity, singlePlan.recurrence])
 
   const handleSubmit = React.useCallback(() => {
     const paymentBreakdown = scheduleDateLists().map((item) => ({
-      ...item, amount: singlePlan.amount, currency: singlePlan.currency, status: 'Pending', type: 'default'
+      ...item, amount: singlePlan.amount, currency: singlePlan.currency, status: 'Pending'
     }))
     const payload = {
       depositAmount: deposit, 
@@ -54,33 +52,19 @@ export const CreateAndHoldCurrentPlan = ({studentId, currentPaymentPlanId}) => {
       paymentDateStart, 
       paymentPlanId: newPlan,
       paymentBreakdown,
-      hasAnd: singlePlan.and ? singlePlan.and : false
     }
-    console.log(payload, 'payload')
-    Axios.post(`/api/student/add_new_and_hold_the_current_plan/${studentId}/${currentPaymentPlanId}`, payload)
+    setDisAbleSubmitBtn(true)
+    Axios.post(`/api/student/add_new_plan/${studentId}`, payload)
       .then(res => {
         if (res.data) {
           syncAllPaymentPlanByStudent(studentId)
           setTimeout(() => {
             history.replace(`/`)
           }, 200)
-        } 
+        }
       })
       .catch(err => console.log(err))
-  }, [
-    history, 
-    deposit, 
-    currency, 
-    depositDatePaid, 
-    paymentDateStart, 
-    newPlan, 
-    studentId, 
-    currentPaymentPlanId, 
-    scheduleDateLists, 
-    singlePlan.amount, 
-    singlePlan.currency,
-    singlePlan.and
-  ])
+  }, [history, deposit, currency, depositDatePaid, paymentDateStart, newPlan, studentId, scheduleDateLists, singlePlan.amount, singlePlan.currency])
 
   React.useEffect(() => {
     let unsubscribe = false
@@ -90,7 +74,7 @@ export const CreateAndHoldCurrentPlan = ({studentId, currentPaymentPlanId}) => {
     return () => {
       unsubscribe = true
     }
-  }, [plans, studentId])
+  }, [plans])
 
   React.useEffect(() => {
     if (newPlan === '' || deposit === '' || deposit === 0 || depositDatePaid === '' || paymentDateStart === '') {
@@ -115,14 +99,10 @@ export const CreateAndHoldCurrentPlan = ({studentId, currentPaymentPlanId}) => {
   }, [newPlan])
 
   return (
-    <RightPanelSlide title="Add New And Hold The Current Plan">
+    <RightPanelSlide title="Add New Plan">
         <div className="table-responsive table_wrapper" style={{boxShadow: 'none', padding: 0}}>
           <table className="table">
             <thead>
-              <tr>
-                <th>Current Plan To Hold</th>
-                <th><PlanName planId={currentPaymentPlanId} /></th>
-              </tr>
               <tr>
                 <th>New Plan</th>
                 <th>
@@ -191,4 +171,4 @@ export const CreateAndHoldCurrentPlan = ({studentId, currentPaymentPlanId}) => {
   )
 }
 
-export default connect()(CreateAndHoldCurrentPlan)
+export default connect()(CreateNewPlan)

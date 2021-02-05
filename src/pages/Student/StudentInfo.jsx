@@ -3,15 +3,14 @@ import BaseLayout from 'components/BaseLayout'
 import React, {useEffect, useState, useCallback} from 'react'
 import { Link, useHistory, useParams } from 'react-router-dom'
 import BackButton from 'statelessComponent/BackButton'
-// import AddNotesForm from './AddNotesForm'
 import { connect, useDispatch } from 'react-redux'
-// import StudentNotes from './StudentNotes'
 import './student-info.css'
 import StudentPaymentInfo from './StudentPaymentInfo'
 import StudentProfileInfo from './StudentProfileInfo'
 import { studentStatus } from 'helpers'
 import StudentPaymentBreakdown from './StudentPaymentBreakdown'
 import StudentPlans from './StudentPlans'
+import {syncAllPaymentPlanByStudent} from 'helpers/syncStore'
 
 function StudentInfo() {
   const {studentID} = useParams()
@@ -51,12 +50,6 @@ function StudentInfo() {
       .then(res => {
         if (!unsubscribe) {
           setStudentInfoSingle(res.data.student)
-          dispatch({
-            type: 'ALL_NOTES_BY_STUDENT', 
-            payload: {
-              data: res.data.student.notes
-            }
-          })
         }
         
       })
@@ -65,6 +58,10 @@ function StudentInfo() {
       unsubscribe = true
     }
   }, [studentID, dispatch])
+
+  useEffect(() => {
+    syncAllPaymentPlanByStudent(studentID)
+  }, [studentID])
 
   if (Object.keys(studentInfoSingle).length === 0) {
     return (
@@ -121,8 +118,6 @@ function StudentInfo() {
 
             <StudentPlans studentId={studentID} />
 
-            {/* <AddNotesForm studentId={'hqS2sbuGBT6bGx2XzQrg'}/>
-            <StudentNotes studentId={'hqS2sbuGBT6bGx2XzQrg'}/> */}
             <StudentPaymentBreakdown paymentPlanId={studentInfoSingle.paymentInfo.paymentPlanId} />
           </div>
         </div>

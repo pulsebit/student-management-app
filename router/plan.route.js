@@ -11,12 +11,13 @@ router.get('/', (req, res) => {
 })
 
 router.post('/create', (req, res) => {
-  const {currency, amount, quantity, recurrence, resultName} = req.body
-  const savePlan = new Plan({currency, amount, quantity, recurrence, resultName})
+  const {currency, amount, quantity, recurrence, resultName, and} = req.body
+  const savePlan = new Plan({currency, amount, quantity, recurrence, resultName, and})
   savePlan.save((err, newPlan) => {
     if (err) return res.sendStatus(500)
     res.send({plan: newPlan})
   })
+  // res.send(and)
 })
 
 router.get('/:id', (req, res) => {

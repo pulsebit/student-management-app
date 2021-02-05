@@ -2,7 +2,9 @@ const router = require('express').Router()
 const requiredAuth = require('../middleware')
 const Student = require('../models/Student.model')
 const PaymentList = require('../models/PaymentList.model')
-const ObjectId = require('mongoose').Types.ObjectId; 
+const PaymentPlanByStudent = require('../models/PaymentPlanByStudent.model')
+const ObjectId = require('mongoose').Types.ObjectId
+
 
 router.use(requiredAuth)
 
@@ -148,9 +150,8 @@ router.delete('/:studentId', (req, res) => {
   const {studentId} = req.params
   Student.findByIdAndDelete(studentId, (err, student) => {
     if(err) return res.status(400).send(err)
-    PaymentList.deleteMany({ studentId: new ObjectId(studentId) }, (err) => {
-      if (err) console.log(err)
-    })
+    PaymentList.deleteMany({ studentId, studentId: new ObjectId(studentId) }, (err) => {})
+    PaymentPlanByStudent.deleteMany({ studentId, studentId: new ObjectId(studentId) }, (err, deleted) => {})
     res.send({msg: `Student ${student.firstName} ${student.lastName} is deleted.`})
   })
 })
@@ -181,101 +182,111 @@ router.post('/addNotes/:studentId', (req, res) => {
 })
 
 
-router.post('/add-payment-breakdown/:studentId', (req, res) => {
-  const {studentId} = req.params
-  const {payload} = req.body
-
-  Student.findById(studentId, (err, result) => {
-    if (err) return res.status(400).send({err})
-    result.payment.breakdown.push({...payload})
-    result.save().then(student => {
-      res.send(student.payment.breakdown)
-    })
-  })
-})
-
-
-router.get('/payment/:paymentBDId', (req, res) => {
-  const {paymentBDId} = req.params
-  Student.findOne({'payment.breakdown._id': paymentBDId}, (err, query) => {
-    res.send({
-      paymentBDOne: query.payment.breakdown.id(paymentBDId),
-    })
-  })
-})
-
-router.put('/payment-update/:paymentBDId', (req, res) => {
-  const {paymentBDId} = req.params
-  const {amount, currency, dueDate, datePaid, status} = req.body
-  Student.findOneAndUpdate({'payment.breakdown._id': paymentBDId}, {$set: {
-    'payment.breakdown.$.currency': currency,
-    'payment.breakdown.$.amount': amount,
-    'payment.breakdown.$.dueDate': dueDate,
-    'payment.breakdown.$.datePaid': datePaid,
-    'payment.breakdown.$.status': status,
-  }}, (err, updated) => {
-    if (err) return res.sendStatus(500)
-    res.send('updated')
-  })
-})
-
-
-router.post('/payment-note-create-or-update', (req, res) => {
-  const {userId, studentId, notes, paymentBreakdownData} = req.body
-  Student
-    .findOneAndUpdate({
-      'paymentBreakdown._id': paymentBreakdownData._id 
-    }, {
-      '$set': {
-        'paymentBreakdown.$.amount': paymentBreakdownData.amount,
-        'paymentBreakdown.$.currency': paymentBreakdownData.currency,
-        'paymentBreakdown.$.dueDate': paymentBreakdownData.dueDate,
-        'paymentBreakdown.$.status': paymentBreakdownData.status,
-        'paymentBreakdown.$.datePaid': paymentBreakdownData.datePaid,
-        'paymentBreakdown.$.notes': notes,
-        'paymentBreakdown.$.editedBy': userId,
-        'paymentBreakdown.$.updatedAt': new Date(),
-      }
-    }, (err, result) => {
-      if (err) return res.sendStatus(500)
-      Student.findById(studentId, (err, result2) => {
-        if (err) return res.sendStatus(500)
-        res.send(result2.paymentBreakdown)
-      })
-    })
-})
-
-
-router.get('/paymentId/:pid', (req, res) => {
-  const {pid} = req.params
-  Student.findOne({ 'paymentBreakdown._id': pid }, (err, result) => {
-    if (err) return res.sendStatus(500)
-    res.send(result.paymentBreakdown.id(pid))
-  })
-})
-
-
 router.post('/add_new_and_hold_the_current_plan/:studentId/:currentStudentPaymentId', (req, res) => {
   const {studentId, currentStudentPaymentId} = req.params
-  const {depositAmount, currency, depositPaidDate, paymentDateStart, paymentPlanId} = req.body
-  Student.findById(studentId, (err, student) => {
-    if (err) return res.sendStatus(500)
-    student.paymentPlans.push({
-      depositAmount, 
-      currency, 
-      depositPaidDate, 
-      paymentDateStart, 
-      paymentPlanId,
-      status: 'Active',
-    })
-    const save = student.save()
-    if (save) {
-      Student.findOneAndUpdate({
-        'paymentPlans._id': currentStudentPaymentId
+  const {depositAmount, currency, depositPaidDate, paymentDateStart, paymentPlanId, paymentBreakdown, hasAnd} = req.body
+  const newPaymentBreakdown = paymentBreakdown.map(item => {
+    return {...item, studentId, paymentPlanId}
+  })
+  PaymentPlanByStudent.create({
+    studentId,
+    depositAmount, 
+    currency, 
+    depositPaidDate, 
+    paymentDateStart, 
+    paymentPlanId,
+    status: 'Active',
+  }).then(saved => {
+    if (saved) {
+      PaymentPlanByStudent.findOneAndUpdate({ 
+        paymentPlanId: currentStudentPaymentId,
+        studentId
       }, {
-        'paymentPlans.$.status': 'On-hold'
+        status: 'On-hold',
       }, (err, updated) => {
-        res.send(updated)
+        PaymentList.insertMany([...newPaymentBreakdown], 
+          (err, paymentLists) => {
+            if (hasAnd) {
+              PaymentList.updateMany(
+                {amount: hasAnd.amount, studentId, paymentPlanId }, 
+                {amount: hasAnd.amount, type: 'and'},
+                (err) => {}
+              )
+            }
+            PaymentPlanByStudent.find((err, allPaymentPlanStudent) => {
+              res.send({allPaymentPlanStudent, saved, paymentLists})
+            }).sort({ createdAt: -1 })
+        })
+      })
+    }
+  })
+})
+
+router.post('/update_new_added_plan_by_student/:studentId', (req, res) => {
+  const {studentId} = req.params
+  const {paymentBreakdown, paymentPlanId} = req.body
+  const newPaymentBreakdown = paymentBreakdown.map(item => {
+    return {...item, studentId, paymentPlanId}
+  })
+  PaymentList.insertMany([...newPaymentBreakdown], (err, paymentLists) => {
+    res.send(paymentLists)
+  })
+})
+
+router.post('/add_new_and_cancel_the_current_plan/:studentId/:currentStudentPaymentId', (req, res) => {
+  const {studentId, currentStudentPaymentId} = req.params
+  const {depositAmount, currency, depositPaidDate, paymentDateStart, paymentPlanId, paymentBreakdown} = req.body
+  const newPaymentBreakdown = paymentBreakdown.map(item => {
+    return {...item, studentId, paymentPlanId}
+  })
+  PaymentPlanByStudent.create({
+    studentId,
+    depositAmount, 
+    currency, 
+    depositPaidDate, 
+    paymentDateStart, 
+    paymentPlanId,
+    status: 'Active',
+  }).then(saved => {
+    if (saved) {
+      PaymentPlanByStudent.findOneAndUpdate({ 
+        paymentPlanId: currentStudentPaymentId,
+        studentId
+      }, {
+        status: 'Cancelled',
+      }, (err, updated) => {
+        PaymentList.insertMany([...newPaymentBreakdown], 
+          (err, paymentLists) => {
+            PaymentPlanByStudent.find((err, allPaymentPlanStudent) => {
+              res.send({allPaymentPlanStudent, saved})
+            }).sort({ createdAt: -1 })
+        })
+      })
+    }
+  })
+})
+
+router.post('/add_new_plan/:studentId', (req, res) => {
+  const {studentId} = req.params
+  const {depositAmount, currency, depositPaidDate, paymentDateStart, paymentPlanId, paymentBreakdown} = req.body
+  const newPaymentBreakdown = paymentBreakdown.map(item => {
+    return {...item, studentId, paymentPlanId}
+  })
+  PaymentPlanByStudent.create({
+    studentId,
+    depositAmount, 
+    currency, 
+    depositPaidDate, 
+    paymentDateStart, 
+    paymentPlanId,
+    status: 'Active',
+  }).then(saved => {
+    if (saved) {
+      PaymentList.insertMany([...newPaymentBreakdown], 
+        (err, paymentLists) => {
+          PaymentPlanByStudent.find((err, allPaymentPlanStudent) => {
+            res.send({allPaymentPlanStudent, saved})
+          }).sort({ createdAt: -1 })
       })
     }
   })
@@ -284,10 +295,49 @@ router.post('/add_new_and_hold_the_current_plan/:studentId/:currentStudentPaymen
 
 router.get('/all_payment_plans_by_student_id/:studentId', (req, res) => {
   const {studentId} = req.params
-  Student.findById(studentId, (err, student) => {
+  PaymentPlanByStudent.find({studentId}, (err, paymentPlans) => {
     if (err) return res.sendStatus(500)
-    res.send(student.paymentPlans)
+    res.send(paymentPlans)
+  }).sort({createdAt: -1})
+})
+
+
+router.get('/student-plan-active/:studentId', (req, res) => {
+  const {studentId} = req.params
+  PaymentPlanByStudent.findOne({studentId, status: 'Active'}, (err, resp) => {
+    res.send(resp)
   })
 })
+
+router.get('/student-plan/:studentId/:paymentPlanId', (req, res) => {
+  const {studentId, paymentPlanId} = req.params
+  PaymentPlanByStudent.findOne({studentId, paymentPlanId}, (err, resp) => {
+    res.send(resp)
+  })
+})
+
+router.delete('/student_payment_plan/:id/:paymentPlanId/:studentId', (req, res) => {
+  const {id, paymentPlanId, studentId} = req.params
+  PaymentPlanByStudent.findByIdAndDelete(id, (err, deleted) => {
+    if (deleted) {
+      PaymentList.deleteMany({ paymentPlanId, studentId, studentId: new ObjectId(studentId) }, (err, deleteMany) => {})
+      Notification.deleteMany({ paymentPlanId }, (err) => {})
+    }
+  })
+})
+
+router.get('/student_payment_plan/:id', (req, res) => {
+  PaymentPlanByStudent.findById(req.params.id, (err, found) => {
+    res.send(found)
+  })
+})
+
+router.put('/update_student_payment_plan/:id', (req, res) => {
+  const {payload} = req.body
+  PaymentPlanByStudent.findByIdAndUpdate(req.params.id, {...payload}, (err, updated) => {
+    res.send(updated)
+  })
+})
+
 
 module.exports = router

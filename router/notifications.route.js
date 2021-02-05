@@ -3,6 +3,7 @@ const requiredAuth = require('../middleware')
 const Student = require('../models/Student.model')
 const Notification = require('../models/Notification.model')
 const PaymentList = require('../models/PaymentList.model')
+const PaymentPlanByStudent = require('../models/PaymentPlanByStudent.model')
 
 var date = new Date()
 const now = date.toISOString().slice(0,-14)
