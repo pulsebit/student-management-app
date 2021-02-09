@@ -57,7 +57,7 @@ export const CreateStudent = () => {
     e.preventDefault()
     setDisableSubmitBtn(true) 
     setFormText('Submitting...') 
-    const studentInfo = {firstName, lastName, email, country,}
+    const studentInfo = {firstName, lastName, email, country, phone}
     const paymentInfo = {depositAmount, depositPaidDate, paymentStatus, 
                           salesGuy, paymentMethod, contractSigned, joinedDate, 
                           currency, paymentPlanId, paymentDateStart} 
@@ -78,7 +78,7 @@ export const CreateStudent = () => {
   [firstName, lastName, email, country, depositAmount, depositPaidDate, 
     paymentStatus, salesGuy, paymentMethod, contractSigned, joinedDate, 
     currency,paymentDateStart, history, paymentPlanId, scheduleDateLists, 
-    singlePlan.amount, singlePlan.currency])
+    singlePlan.amount, singlePlan.currency, phone])
 
 
   useEffect(() => {

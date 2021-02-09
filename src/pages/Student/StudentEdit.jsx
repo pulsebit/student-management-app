@@ -32,7 +32,7 @@ export const StudentEdit = () => {
     e.preventDefault()
     setDisableSubmitBtn(true) 
     setFormText('Submitting...') 
-    const studentInfo = {firstName, lastName, email, country,}    
+    const studentInfo = {firstName, lastName, email, country, phone}    
     const paymentInfo = {depositAmount, depositPaidDate, paymentStatus, 
                           salesGuy, paymentMethod, contractSigned, joinedDate, 
                           currency, paymentPlanId, paymentDateStart}
@@ -42,7 +42,7 @@ export const StudentEdit = () => {
       setFormText('Redirecting...')
       if (res.data) {
         setTimeout(() => {
-          history.push('/students')
+          history.push(`/students/${studentID}`)
         }, 300)
       }
     })
@@ -51,7 +51,7 @@ export const StudentEdit = () => {
   }, 
   [firstName, lastName, email, country, depositAmount, depositPaidDate, 
     paymentStatus, salesGuy, paymentMethod, contractSigned, joinedDate, 
-    currency, history, paymentDateStart, paymentPlanId, studentID])
+    currency, history, paymentDateStart, paymentPlanId, studentID, phone])
 
 
   useEffect(() => {
