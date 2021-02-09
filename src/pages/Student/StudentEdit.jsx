@@ -1,11 +1,10 @@
 import BaseLayout from 'components/BaseLayout'
 import React, {useState, useCallback, useEffect} from 'react'
-import { connect, useSelector } from 'react-redux'
+import { connect } from 'react-redux'
 import axios from 'axios'
 import { useHistory, useParams } from 'react-router-dom'
 import BackButton from 'statelessComponent/BackButton'
 import { currencies, inputTypeDateValue, studentStatus } from 'helpers'
-import Axios from 'axios'
 
 export const StudentEdit = () => {
   const [firstName, setFirstName] = useState('')
@@ -28,8 +27,6 @@ export const StudentEdit = () => {
   const [loading, setLoading] = useState(false)
   const [paymentPlanId, setPaymentPlanId] = useState('')
   const [paymentDateStart, setPaymentDateStart] = useState('')
-  const {plans} = useSelector(state => state.planReducer)
-  const [paymentPlans, setPaymentPlans] = useState([])
 
   const handleSubmit = useCallback((e) => {
     e.preventDefault()
@@ -94,23 +91,6 @@ export const StudentEdit = () => {
 
   useEffect(() => {
     let unsubscribe = false
-    if (plans.length) {
-      if (!unsubscribe) setPaymentPlans(plans)
-    } else {
-      Axios.get(`/api/plan`)
-        .then(res => {
-          if (!unsubscribe) setPaymentPlans(res.data.plans)
-        })
-        .catch(err => console.log(err))
-    }
-    return () => {
-      unsubscribe = true
-    }
-  }, [plans])
-
-
-  useEffect(() => {
-    let unsubscribe = false
     if (firstName === '' || lastName === '' || email === '' || depositAmount === 0 || joinedDate === '' || paymentStatus === '') {
       if (!unsubscribe) setDisableSubmitBtn(true)
     }else {
@@ -134,12 +114,94 @@ export const StudentEdit = () => {
   return (
     <BaseLayout>
       <BackButton text="Back" />
-      <h2 className="text-center mt-4 mb-4">Edit Student</h2>
+      <h2 className="mt-4 mb-4">Edit Student</h2>
 
       <div className="StudentCreatePage">
         <form onSubmit={handleSubmit}>
 
-            <div className="col-md-6 m-auto">
+          <div className="row">
+            <div className="col-md-6">
+              <div className="PaymentInfo">
+                <h4 style={{marginBottom: '25px'}}>Payment Info</h4>
+
+                <div className="form-group">
+                  <div className="row">
+                    <div className="col-md-4">
+                      <label>Deposit</label>
+                      <input type="number" placeholder="amount" className="form-control form-control-lg app-input"
+                        value={depositAmount}
+                        onChange={e => setDepositAmount(e.target.value)}
+                      />
+                    </div>
+                    <div className="col-md-4">
+                      <label>Currency</label>
+                      <select className="form-control form-control-lg app-input"
+                        value={currency}
+                        onChange={e => setCurrency(e.target.value)}
+                      >
+                        <option value=""></option>
+                        {currencies && currencies.map((item, i) => (
+                          <option value={item} key={i}>{item}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="col-md-4">
+                      <label>Date Paid</label>
+                      <input type="date" className="form-control form-control-lg app-input"
+                        value={depositPaidDate}
+                        onChange={e => setDepositPaidDate(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="form-group">
+                  <label>Signed Contract</label>
+                  <input type="text" className="form-control form-control-lg app-input"
+                    required
+                    value={contractSigned} 
+                    onChange={e => setContractSigned(e.target.value)} 
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Sales Rep</label>
+                  <input type="text" className="form-control form-control-lg app-input"
+                    value={salesGuy} 
+                    onChange={e => setSalesGuy(e.target.value)} 
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Payment Method</label>
+                  <input type="text" className="form-control form-control-lg app-input"
+                    value={paymentMethod} 
+                    onChange={e => setPaymentMethod(e.target.value)} 
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Payment Status</label>
+                  <select className="form-control form-control-lg app-input"
+                    required
+                    value={paymentStatus} 
+                    onChange={e => setPaymentStatus(e.target.value)} 
+                  >
+                    <option value=""></option>
+                    {studentStatus && studentStatus.map((sts, i) => (
+                      <option value={sts.name} key={i}>{sts.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Joined Date</label>
+                  <input type="date" className="form-control form-control-lg app-input"
+                    value={joinedDate}
+                    onChange={e => setJoinedDate(e.target.value)}
+                  />
+                </div>
+              </div>              
+            </div>
+
+            <div className="col-md-6">
               <div className="StudentInfo">
                 <h4 style={{marginBottom: '25px'}}>Student Info</h4>
 
@@ -192,126 +254,17 @@ export const StudentEdit = () => {
                 </div>
 
               </div>
-            </div>
-
-            <div className="col-md-6 m-auto">
-              <div className="PaymentInfo">
-                <h4 style={{marginBottom: '25px'}}>Payment Info</h4>
-
-                <div className="form-group">
-                  <div className="row">
-                    <div className="col-md-4">
-                      <label>Deposit</label>
-                      <input type="number" placeholder="amount" className="form-control form-control-lg app-input"
-                        value={depositAmount}
-                        onChange={e => setDepositAmount(e.target.value)}
-                      />
-                    </div>
-                    <div className="col-md-4">
-                      <label>Currency</label>
-                      <select className="form-control form-control-lg app-input"
-                        value={currency}
-                        onChange={e => setCurrency(e.target.value)}
-                      >
-                        <option value=""></option>
-                        {currencies && currencies.map((item, i) => (
-                          <option value={item} key={i}>{item}</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="col-md-4">
-                      <label>Date Paid</label>
-                      <input type="date" className="form-control form-control-lg app-input"
-                        value={depositPaidDate}
-                        onChange={e => setDepositPaidDate(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="row">
-                  <div className="col-md-6">
-                    <div className="form-group">
-                      <label>Payment Plan</label>
-                      <select className="form-control form-control-lg app-input"
-                        value={paymentPlanId}
-                        onChange={e => setPaymentPlanId(e.target.value)}
-                      >
-                        <option value=""></option>
-                        {paymentPlans && paymentPlans.map((item, i) => (
-                          <option key={i} value={item._id}>{item.resultName}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                  <div className="col-md-6">
-                    <div className="form-group">
-                      <label>Payment Date Start</label>
-                      <input type="date" className="form-control form-control-lg app-input"
-                        value={paymentDateStart}
-                        onChange={e => setPaymentDateStart(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="form-group">
-                  <label>Signed Contract</label>
-                  <input type="text" className="form-control form-control-lg app-input"
-                    required
-                    value={contractSigned} 
-                    onChange={e => setContractSigned(e.target.value)} 
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>Sales Guy</label>
-                  <input type="text" className="form-control form-control-lg app-input"
-                    value={salesGuy} 
-                    onChange={e => setSalesGuy(e.target.value)} 
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Payment Method</label>
-                  <input type="text" className="form-control form-control-lg app-input"
-                    value={paymentMethod} 
-                    onChange={e => setPaymentMethod(e.target.value)} 
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Payment Status</label>
-                  <select className="form-control form-control-lg app-input"
-                    required
-                    value={paymentStatus} 
-                    onChange={e => setPaymentStatus(e.target.value)} 
+              <div className="pt-2 pb-2 create-student-form-btn-wrapper text-right">
+                <button 
+                  type="submit" 
+                  className="btn app-primary-btn" 
+                  disabled={disableSubmitBtn}
                   >
-                    <option value=""></option>
-                    {studentStatus && studentStatus.map((sts, i) => (
-                      <option value={sts.name} key={i}>{sts.name}</option>
-                    ))}
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label>Joined Date</label>
-                  <input type="date" className="form-control form-control-lg app-input"
-                    value={joinedDate}
-                    onChange={e => setJoinedDate(e.target.value)}
-                  />
-                </div>
+                    {formBtnText}
+                </button>
               </div>
             </div>
-
-
-          <div className="text-right col-md-6 m-auto">
-            <div className="pt-2 pb-2 create-student-form-btn-wrapper">
-              <button 
-                type="submit" 
-                className="btn app-primary-btn" 
-                disabled={disableSubmitBtn}
-                >
-                  {formBtnText}
-              </button>
-            </div>
+ 
           </div>
 
         </form>

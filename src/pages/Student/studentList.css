@@ -12,6 +12,13 @@
   color: #00123a;
 }
 
+.studentListStatus {
+  color: #fff;
+  padding: 2px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+
 .search__query-box {
   display: flex;
   width: 500px;
@@ -54,7 +61,10 @@
 .custom_pagination {
   padding: 10px 0;
   text-align: right;
+  border-top: 1px solid #f2f3f5;
+  padding-bottom: 0;
 }
+
 
 .color-status {
   height: 12px;
@@ -109,3 +119,37 @@
   opacity: 0.8;
 }
 
+
+.search-wrapper {
+  display: flex;
+  padding: 10px 0;
+}
+
+.left-search-bar {
+  display: flex;
+  margin-right: 15px;
+}
+
+button.advance-filter-btn {
+  background: #8b5cf630;
+  color: #562abb;
+  font-weight: bold;
+}
+
+.filter-container {
+  position: absolute;
+  background: #fff;
+  box-shadow: 0 0px 26px rgb(0 30 84 / 5%);
+  border-radius: 4px;
+  padding: 20px;
+  width: 300px;
+  margin-top: 2px;
+}
+
+.filter-container .item:not(:last-child) {
+  margin-bottom: 12px;
+}
+
+.filter-container .item:last-child {
+  text-align: right;
+}

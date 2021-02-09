@@ -34,4 +34,7 @@ const schema = new mongoose.Schema({
   paymentPlans: [paymentPlans],
 }, { timestamps: true, strict: false })
 
+schema.index({ firstName: 'text', lastName: 'text', email: 'text', 'paymentInfo.salesGuy': 'text' })
+
 module.exports = mongoose.model('Student', schema)
+

@@ -13,10 +13,9 @@ import { syncAllPlans } from 'helpers/syncStore';
 
 export const store = createStore(rootReducer)
 
-syncAllPlans()
-
 onAuthStateChanged((isAuthenticated) => {
   store.dispatch({type: actions.IS_AUTHENTICATE, isAuthenticated})
+  syncAllPlans()
   ReactDOM.render(
     <Provider store={store}>
       <App />

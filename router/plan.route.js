@@ -1,6 +1,8 @@
 const router = require('express').Router()
 const requireAuth = require('../middleware')
 const Plan = require('../models/Plan.model')
+const PaymentPlanByStudent = require('../models/PaymentPlanByStudent.model')
+const PaymentList = require('../models/PaymentList.model')
 
 router.use(requireAuth)
 
@@ -11,8 +13,8 @@ router.get('/', (req, res) => {
 })
 
 router.post('/create', (req, res) => {
-  const {currency, amount, quantity, recurrence, resultName, and} = req.body
-  const savePlan = new Plan({currency, amount, quantity, recurrence, resultName, and})
+  const {currency, amount, quantity, recurrence, resultName} = req.body
+  const savePlan = new Plan({currency, amount, quantity, recurrence, resultName})
   savePlan.save((err, newPlan) => {
     if (err) return res.sendStatus(500)
     res.send({plan: newPlan})
@@ -36,9 +38,14 @@ router.put('/update/:id', (req, res) => {
 })
 
 router.delete('/:id', (req, res) => {
-  Plan.findByIdAndDelete(req.params.id, (err, deleted) => {
+  const {id} = req.params
+  Plan.findByIdAndDelete(id, (err, deleted) => {
     if (err) return res.sendStatus(500)
-    res.send({deleted: true})
+    if (deleted) {
+      PaymentPlanByStudent.deleteMany({ paymentPlanId: id }, (err) => {})
+      PaymentList.deleteMany({ paymentPlanId: id }, (err) => {})
+      res.send({deleted: true})
+    }
   })
 })
 

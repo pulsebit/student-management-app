@@ -5,81 +5,103 @@ const PaymentList = require('../models/PaymentList.model')
 const PaymentPlanByStudent = require('../models/PaymentPlanByStudent.model')
 const ObjectId = require('mongoose').Types.ObjectId
 
-
 router.use(requiredAuth)
 
 router.get('/', (req, res) => {
-  const {order, orderBy, name, tag, qtyOp, qtyNum, currency, paymentType, status, recurrence, paymentTypeOp, page} = req.query
+  const {
+    search,
+    name,
+    email,
+    paymentPlan,
+    salesRep,
+    contractSigned,
+    status,
+    order, 
+    orderBy,
+    page
+  } = req.query
+
   const perPage = 10
 
   const allStudent = Student.find()
 
-  if (paymentType) {
+  if (search) {
+    if (search.includes('@')) {
+      allStudent.find({  
+        $and: [ {email: search} ]
+      })
+    } else {
+      allStudent.find({  
+        $text: { $search: search }
+      })
+    }
+  }
+
+  if (name) {
     allStudent.find({
-      $and: [{'payment.paymentType': {$regex: paymentType, $options: 'i'}}]
+      $text: { $search: name }
     })
   }
 
-  if (recurrence && paymentTypeOp) {
-    if (paymentTypeOp === '<=') {
-      allStudent.find({
-        $and: [
-          {'payment.paymentTypeAmount': {$lte: recurrence}},
-          {'payment.paymentType': {$regex: paymentType, $options: 'i'}}
-        ],
-      })
-    }
-    if (paymentTypeOp === '>=') {
-      allStudent.find({
-        $and: [
-          {'payment.paymentTypeAmount': {$gte: recurrence}},
-          {'payment.paymentType': {$regex: paymentType, $options: 'i'}}
-        ],
-      })
-    }
+  if (email) {
+    allStudent.find({ 
+      $and: [ {email} ]
+    })
   }
 
-  if (qtyNum && qtyOp) {
-    if (qtyOp === '<=') {
-      allStudent.find({
-        $and: [{'payment.quantity': {$lte: qtyNum}}]
-      })
-    }
-    if (qtyOp === '>=') {
-      allStudent.find({
-        $and: [{'payment.quantity': {$gte: qtyNum}}]
-      })
-    }
+  if (paymentPlan) {
+    return PaymentPlanByStudent.find({ paymentPlanId: paymentPlan }, (err, result) => {
+      const studentIds = []
+      if (result && result.length) {
+        result.forEach(item => {
+          studentIds.push(new ObjectId(item.studentId))
+        })
+        allStudent
+          .find({_id: { $in: [...studentIds] } })
+          .limit(perPage)
+          .sort({createdAt: 'asc'})
+          .then(students => {
+            Student.countDocuments((err, count) => {
+              res.send({
+                students, 
+                count, 
+                allDocsOfPage: perPage * (parseInt(page) || 1),
+                perPage,
+              })
+            })
+          })
+          .catch(err => res.status(400).send({err}))
+      }
+    })
+  }
+
+  if (salesRep) {
+    allStudent.find({
+      $text: { $search: salesRep }
+    })
+  }
+
+  if (contractSigned) {
+    allStudent.find({
+      $and: [
+        { 'paymentInfo.contractSigned': {$regex: contractSigned, $options: 'i'} }, 
+      ]
+    })
+  }
+
+  if (status) {
+    allStudent.find({
+      $and: [
+        { 'paymentInfo.paymentStatus': {$regex: status, $options: 'i'} }, 
+      ]
+    })
   }
 
   if (order && orderBy) {
     allStudent.sort({[orderBy]: order})
   }
 
-  if (name) {
-    allStudent.find({
-      $or: [
-        {firstName: {$regex: name, $options: 'i'}}, 
-        {lastName: {$regex: name, $options: 'i'}},
-      ]
-    })
-  }
 
-  if (status) {
-    allStudent.find({'payment.paymentStatus': {$regex: status, $options: 'i'}})
-  }
-
-  if (currency) {
-    allStudent.find({'payment.currency': {$regex: currency, $options: 'i'}})
-  }
-
-  if (tag) {
-    allStudent.find({
-      $and: [
-        {'payment.paymentTag': {$regex: tag, $options: 'i'}},
-      ]
-    })
-  }
 
   if (page) {
     allStudent.skip((parseInt(page) - 1) * perPage)
@@ -88,10 +110,10 @@ router.get('/', (req, res) => {
   allStudent
     .limit(perPage)
     .sort({createdAt: 'asc'})
-    .then(student => {
+    .then(students => {
       Student.countDocuments((err, count) => {
         res.send({
-          student, 
+          students, 
           count, 
           allDocsOfPage: perPage * (parseInt(page) || 1),
           perPage,
@@ -101,19 +123,30 @@ router.get('/', (req, res) => {
   allStudent.catch(err => res.status(400).send({err}))
 })
 
-
 router.post('/create', (req, res) => {
   const {studentInfo, paymentInfo, paymentBreakdown} = req.body
   new Student({ ...studentInfo, paymentInfo })
         .save((err, saved) => {
-          const newPaymentBreakdown = paymentBreakdown.map(item => {
-            return {...item,studentId: saved._id}
-          })
-          PaymentList.insertMany([
-            ...newPaymentBreakdown
-          ], (err, paymentLists) => {
-            res.send({student: saved, paymentLists})
-          })
+          if (saved) {
+            const newPaymentBreakdown = paymentBreakdown.map(item => {
+              return {...item, studentId: saved._id, paymentPlanId: paymentInfo.paymentPlanId}
+            })
+            PaymentPlanByStudent.create({
+              studentId: saved._id,
+              depositAmount: paymentInfo.depositAmount, 
+              currency: paymentInfo.currency, 
+              depositPaidDate: paymentInfo.depositPaidDate, 
+              paymentDateStart: paymentInfo.paymentDateStart, 
+              paymentPlanId: paymentInfo.paymentPlanId,
+              status: 'Active',
+            }, (err, ppBs) => {
+              if (ppBs) {
+                PaymentList.insertMany([...newPaymentBreakdown], (err, paymentBreakdown) => {
+                  res.send({student: saved, paymentBreakdown})
+                })
+              }
+            })
+          }
         })
 })
 
@@ -184,7 +217,7 @@ router.post('/addNotes/:studentId', (req, res) => {
 
 router.post('/add_new_and_hold_the_current_plan/:studentId/:currentStudentPaymentId', (req, res) => {
   const {studentId, currentStudentPaymentId} = req.params
-  const {depositAmount, currency, depositPaidDate, paymentDateStart, paymentPlanId, paymentBreakdown, hasAnd} = req.body
+  const {depositAmount, currency, depositPaidDate, paymentDateStart, paymentPlanId, paymentBreakdown} = req.body
   const newPaymentBreakdown = paymentBreakdown.map(item => {
     return {...item, studentId, paymentPlanId}
   })
@@ -206,13 +239,6 @@ router.post('/add_new_and_hold_the_current_plan/:studentId/:currentStudentPaymen
       }, (err, updated) => {
         PaymentList.insertMany([...newPaymentBreakdown], 
           (err, paymentLists) => {
-            if (hasAnd) {
-              PaymentList.updateMany(
-                {amount: hasAnd.amount, studentId, paymentPlanId }, 
-                {amount: hasAnd.amount, type: 'and'},
-                (err) => {}
-              )
-            }
             PaymentPlanByStudent.find((err, allPaymentPlanStudent) => {
               res.send({allPaymentPlanStudent, saved, paymentLists})
             }).sort({ createdAt: -1 })
@@ -320,8 +346,8 @@ router.delete('/student_payment_plan/:id/:paymentPlanId/:studentId', (req, res) 
   const {id, paymentPlanId, studentId} = req.params
   PaymentPlanByStudent.findByIdAndDelete(id, (err, deleted) => {
     if (deleted) {
-      PaymentList.deleteMany({ paymentPlanId, studentId, studentId: new ObjectId(studentId) }, (err, deleteMany) => {})
-      Notification.deleteMany({ paymentPlanId }, (err) => {})
+      PaymentList.deleteMany({ paymentPlanId, studentId }, (err) => {})
+      res.send('deteled')
     }
   })
 })

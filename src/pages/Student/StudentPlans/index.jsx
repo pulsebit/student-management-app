@@ -41,16 +41,18 @@ export const StudentPlans = ({studentId}) => {
     return () => {}
   }, [paymentPlanByStudent])
 
-  const deleteBtn = (id, paymentPlanId) => {
+  const deleteBtn = useCallback((id, paymentPlanId) => {
     const confirmDelete = window.confirm('Are you sure?')
     if (confirmDelete) {
       Axios.delete(`/api/student/student_payment_plan/${id}/${paymentPlanId}/${studentId}`)
         .then(res => {
-          syncAllPaymentPlanByStudent(studentId)
+          if (res.data) {
+            syncAllPaymentPlanByStudent(studentId)
+          }
         })
         .catch(err => console.log(err))
     }
-  }
+  }, [studentId])
 
   return (
     <>
@@ -61,18 +63,23 @@ export const StudentPlans = ({studentId}) => {
             <Dropdown>
               <Dropdown.Toggle variant="" id="dropdown-basic" className="btn-sm"></Dropdown.Toggle>
               <Dropdown.Menu>
-                <Link 
-                  replace
-                  to="/add_new_plan"
-                  className="dropdown-item">Add new plan</Link>
-                <Link 
-                  replace
-                  to="/add_new_and_hold_the_current_plan"
-                  className="dropdown-item">Add new and hold the current plan</Link>
-                <Link 
-                  replace
-                  to="/add_new_and_cancel_the_current_plan" 
-                  className="dropdown-item">Add new and cancel the current plan</Link>
+                {(paymentPlanByStudent && paymentPlanByStudent.length === 0) ? (
+                  <Link 
+                    replace
+                    to="/add_new_plan"
+                    className="dropdown-item">Add new plan</Link>
+                ) : (
+                  <>
+                    <Link 
+                      replace
+                      to="/add_new_and_hold_the_current_plan"
+                      className="dropdown-item">Add new and hold the current plan</Link>
+                    <Link 
+                      replace
+                      to="/add_new_and_cancel_the_current_plan" 
+                      className="dropdown-item">Add new and cancel the current plan</Link>
+                  </>
+                )}
               </Dropdown.Menu>
             </Dropdown>
           </div>
@@ -95,7 +102,7 @@ export const StudentPlans = ({studentId}) => {
               </span>
               <div>
                 <Link className="btn btn-sm app-primary-btn mr-2" to={`/edit_payment_plan/${item._id}`}>edit</Link>
-                <button onClick={(e) => deleteBtn(item._id, item.paymentPlanId)} className="btn btn-sm btn-danger" id={item._id}>delete</button>
+                <button onClick={() => deleteBtn(item._id, item.paymentPlanId)} className="btn btn-sm btn-danger" id={item._id}>delete</button>
               </div>
             </div>
           ))}

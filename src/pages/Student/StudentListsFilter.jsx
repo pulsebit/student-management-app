@@ -1,194 +1,104 @@
-import React, {useState, useCallback, useEffect} from 'react'
-import { connect } from 'react-redux'
-import {currencies, paymentRecurrenceType, studentStatus} from 'helpers'
+import React, {useState, useCallback} from 'react'
+import { connect, useSelector } from 'react-redux'
+import { BiFilterAlt } from "react-icons/bi"
+import status from 'helpers/status'
 import { useHistory } from 'react-router-dom'
-import Axios from 'axios'
-import { FaSlidersH } from "react-icons/fa"
-import Dropdown from 'react-bootstrap/Dropdown'
-import {useQuery} from 'helpers'
 
 const StudentListsFilter = () => {
-  const [filterName, setFilterName] = useState('')
-  const [filterTag, setFilterTag] = useState('')
-  const [filterQtyOp, setFilterQtyOp] = useState('')
-  const [filterQtyNum, setFilterQtyNum] = useState('')
-  const [filterCurrency, setFilterCurrency] = useState('')
-  const [filterPaymentType, setFilterPaymentType] = useState('')
-  const [filterStatus, setFilterStatus] = useState('')
-  const [filterRecurrence, setFilterRecurrence] = useState('')
-  const [filterPaymentTypeOp, setFilterPaymentTypeOp] = useState('')
-  const [tagDropdown, setTagDropdown] = useState([])
+  const {plans} = useSelector(state => state.planReducer)
+  const [toggleSearchMore, setToggleSearchMore] = useState(false)
+
+  const [search, setSearch] = useState('')
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [paymentPlanId, setPaymentPlanId] = useState('')
+  const [salesRep, setSalesRep] = useState('')
+  const [contractSigned, setContractSigned] = useState('')
+  const [statusSearch, setStatusSearch] = useState('')
   const history = useHistory()
-  const query = useQuery()
-  const page = query.get('page') || ''
 
-  const handleFilter = useCallback(() => {
-    const isFilterName = filterName !== '' ? `name=${filterName}` : ''
-    const isFilterTag = filterTag !== '' ? `&tag=${filterTag}` : ''
-    const isFilterQtyOp = filterQtyOp !== '' ? `&qtyOp=${filterQtyOp}` : ''
-    const isFilterQtyNum = filterQtyNum !== '' ? `&qtyNum=${filterQtyNum}` : ''
-    const isFilterCurrency = filterCurrency !== '' ? `&currency=${filterCurrency}` : ''
-    const isFilterPaymentType = filterPaymentType !== '' ? `&paymentType=${filterPaymentType}` : ''
-    const isFilterStatus = filterStatus !== '' ? `&status=${filterStatus}` : ''
-    const isFilterRecurrence = filterRecurrence !== '' ? `&recurrence=${filterRecurrence}` : ''
-    const isFilterPaymentTypeOp = filterPaymentTypeOp !== '' ? `&paymentTypeOp=${filterPaymentTypeOp}` : ''
-    const isFilterPage = page !== '' ? `&page=${page}` : ''
+  const handleSearch = useCallback(() => {
+    history.push(`?search=${search}`)
+  }, [history, search])
 
-    history.push(`?${isFilterName}${isFilterTag}${isFilterQtyOp}${isFilterQtyNum}${isFilterCurrency}${isFilterPaymentType}${isFilterStatus}${isFilterRecurrence}${isFilterRecurrence}${isFilterPaymentTypeOp}${isFilterPage}`)
-
-    document.getElementsByClassName('search__query-box_expand')[0].classList.remove('show') 
-
-    }, [
-        history, 
-        filterName, 
-        filterTag, 
-        filterQtyOp,
-        filterQtyNum,
-        filterCurrency,
-        filterPaymentType,
-        filterStatus,
-        filterRecurrence,
-        page,
-        filterPaymentTypeOp
-      ]
+  const handleAdvancedSearch = useCallback(() => {
+    const queryParams = `${name !== '' ? `&name=${name}` : ''}${email !== '' ? `&email=${email}` : ''}${paymentPlanId !== '' ? `&paymentPlan=${paymentPlanId}` : ''}${salesRep !== '' ? `&salesRep=${salesRep}` : ''}${contractSigned !== '' ? `&contractSigned=${contractSigned}` : ''}${statusSearch !== '' ? `&status=${statusSearch}` : ''}`
+    history.push(`?${queryParams}`)
+    setTimeout(() => {
+      setToggleSearchMore(false)
+    }, 100)
+  }, 
+    [history, name, email, paymentPlanId, salesRep, contractSigned, statusSearch]
   )
 
-  const handleClearFilter = useCallback(() => {
-    setFilterName('')
-    setFilterTag('')
-    setFilterQtyOp('')
-    setFilterQtyNum('')
-    setFilterCurrency('')
-    setFilterPaymentType('')
-    setFilterStatus('')
-    setFilterRecurrence('')
-  }, [])
-
-  useEffect(() => {
-    Axios.get('/api/tag')
-      .then(res => setTagDropdown(res.data.tags))
-      .catch(err => console.log(err))
-  }, [])
-
   return (
-    <>
-    <Dropdown>
-    <div className="search__query-box">
-      <Dropdown.Toggle  id="dropdown-basic"
-        className="btn btn-sm search-btn" 
-        style={{width: "fit-content"}}
-      >
-        <FaSlidersH/> Filter
-      </Dropdown.Toggle>
-          
+    <div className="search-wrapper">
+
+      <div className="left-search-bar">
+        <input type="text" className="form-control app-input mr-1" placeholder="Search Name / Email"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+        />
+        <button className="btn app-primary-btn" 
+        disabled={search === ''}
+          onClick={handleSearch}
+        >search</button>
       </div>
 
-      <Dropdown.Menu className="search__query-box_expand" show={false}>
-        <div>
-          <div className="form-group search__query-box_expand__name">
-            <span>Name</span>
-            <input type="text" className="form-control form-control-sm"
-              value={filterName}
-              onChange={e => setFilterName(e.target.value)}
+      <div className="right-search-bar" style={{position: 'relative'}}>
+
+        <button className="advance-filter-btn btn" onClick={() => setToggleSearchMore(state => !state)}>
+          <BiFilterAlt/>
+        </button>
+
+        {toggleSearchMore && (
+          <div className="filter-container">
+            <input type="text" className="form-control app-input mr-1 item" placeholder="Name" 
+              value={name}
+              onChange={e => setName(e.target.value)}
             />
-          </div>
-          <div className="form-group search__query-box_expand__tag">
-            <span>Tag</span>
-            <select className="form-control form-control-sm"
-              value={filterTag}
-              onChange={e => setFilterTag(e.target.value)}
+            <input type="email" className="form-control app-input mr-1 item" placeholder="Email" 
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+            />
+            <select className="form-control app-input mr-1 item"
+              value={paymentPlanId}
+              onChange={e => setPaymentPlanId(e.target.value)}
             >
-              <option value=""></option>
-              {tagDropdown && tagDropdown.map((tag, i) => (
-                <option value={tag.name} key={i}>{tag.name}</option>
+              <option value="">--Payment Plan--</option>
+              {plans.length && plans.map((item, key) => (
+                <option value={item._id} key={key}>{item.resultName}</option>
               ))}
             </select>
-          </div>
-          <div className="form-group search__query-box_expand__qty">
-            <span>Quantity</span>
-            <div>
-              <select className="form-control form-control-sm mr-2"
-                value={filterQtyOp}
-                onChange={e => setFilterQtyOp(e.target.value)}
-              >
-                <option value=""></option>
-                <option value=">=">greater than or equal</option>
-                <option value="<=">less than or equal</option>
-              </select>
-              <input type="number" className="form-control form-control-sm"
-                value={filterQtyNum}
-                onChange={e => setFilterQtyNum(e.target.value)}
-              />
-            </div>
-          </div>
-          <div className="form-group search__query-box_expand__currency-paymentType">
-            <div className="mr-2">
-              <span>Currency</span>
-              <select className="form-control form-control-sm"
-                value={filterCurrency}
-                onChange={e => setFilterCurrency(e.target.value)}
-              >
-                <option value=""></option>
-                {currencies && currencies.map(cur => (
-                  <option value={cur} key={cur}>{cur}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <span>Payment Type</span>
-              <select className="form-control form-control-sm" 
-                value={filterPaymentType}
-                onChange={e => setFilterPaymentType(e.target.value)}
-              >
-                <option value=""></option>
-                {paymentRecurrenceType && paymentRecurrenceType.map(rt => (
-                  <option value={rt} key={rt}>{rt}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-          {filterPaymentType !== '' ? (
-            <div className="form-group search__query-box_expand__recurrence_amount">
-              <span>{filterPaymentType} Amount</span>
-              <div>
-                <select className="form-control form-control-sm mr-2"
-                  value={filterPaymentTypeOp}
-                  onChange={e => setFilterPaymentTypeOp(e.target.value)}
-                >
-                  <option value=""></option>
-                  <option value=">=">greater than or equal</option>
-                  <option value="<=">less than or equal</option>
-                </select>
-                <input type="text" className="form-control form-control-sm" 
-                  value={filterRecurrence}
-                  onChange={e => setFilterRecurrence(e.target.value)}
-                />
-              </div>
-            </div>
-          ) : ''}
-          <div className="form-group search__query-box_expand__status">
-            <span>Status</span>
-            <select className="form-control form-control-sm"
-              value={filterStatus}
-              onChange={e => setFilterStatus(e.target.value)}
+            <input type="text" className="form-control app-input mr-1 item" placeholder="Sales Rep" 
+              value={salesRep}
+              onChange={e => setSalesRep(e.target.value)}
+            />
+            <input type="text" className="form-control app-input mr-1 item" placeholder="Contract Signed" 
+              value={contractSigned}
+              onChange={e => setContractSigned(e.target.value)}
+            />
+            <select className="form-control app-input mr-1 item"
+              value={statusSearch}
+              onChange={e => setStatusSearch(e.target.value)}
             >
-              <option value=""></option>
-              {studentStatus && studentStatus.map((stat, i) => (
-                <option key={i} value={stat.name}>{stat.name}</option>
+              <option value="">--Status--</option>
+              {status && status.map((item, key) => (
+                <option value={item.name} key={key}>{item.name}</option>
               ))}
             </select>
+            <div className="item">
+              <button className="btn mr-2" onClick={() => setToggleSearchMore(state => state = false)}>cancel</button>
+              <button className="btn app-primary-btn"
+                onClick={handleAdvancedSearch}
+              >search</button>
+            </div>
           </div>
-          <div className="form-group search__query-box_expand__submit-btn mb-0 text-right">
-            <button className="btn btn-sm btn-secondary mr-2" onClick={handleClearFilter}>Clear</button>
-            <button className="btn btn-sm btn-primary" onClick={handleFilter}>Submit</button>
-          </div>
-        </div>
-      </Dropdown.Menu>
-    </Dropdown>
-    </>
+        )} 
+
+      </div>
+    </div>
   )
 }
 
-const mapStateToProps = (state) => ({})
-const mapDispatchToProps = {}
-export default connect(mapStateToProps, mapDispatchToProps)(React.memo(StudentListsFilter))
+export default connect()(StudentListsFilter)

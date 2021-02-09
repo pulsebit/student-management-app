@@ -1,13 +1,28 @@
 import React, {useEffect} from 'react'
 import { connect, useDispatch, useSelector } from 'react-redux'
-import { FaPen, FaPlus } from "react-icons/fa"
+import {FaPlus } from "react-icons/fa"
 import { Link, useRouteMatch } from 'react-router-dom'
+import Axios from 'axios'
+import { syncAllPlans } from 'helpers/syncStore'
 
 export const PlanLists = () => {
   const {url} = useRouteMatch()
   const [allPlans, setAllPlans] = React.useState(null)
   const dispatch = useDispatch()
   const {plans} = useSelector(state => state.planReducer)
+
+  const handleDeletePlan = React.useCallback((id) => {
+    const confirm = window.confirm('Are you sure?')
+    if (confirm) {
+      Axios.delete(`/api/plan/${id}`)
+        .then(res => {
+          if(res.data.deleted) {
+            syncAllPlans()
+          }
+        })
+        .catch(err => console.log(err))
+    }
+  }, [])
 
   useEffect(() => {
     let isCancelled = false
@@ -46,9 +61,12 @@ export const PlanLists = () => {
                   <td>{item.resultName}</td>
                   <td>{item.currency}</td>
                   <td>
-                    <Link to={`${url}/edit/${item._id}`} className="btn btn-sm app-primary-btn">
-                      <FaPen/> Edit
+                    <Link to={`${url}/edit/${item._id}`} className="btn btn-sm app-primary-btn mr-2">
+                      edit
                     </Link>
+                    <button className="btn btn-sm btn-danger"
+                      onClick={() => handleDeletePlan(item._id)}
+                    >delete</button>
                   </td>
                 </tr>
               ))}

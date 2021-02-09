@@ -64,19 +64,16 @@ export const CreateStudent = () => {
     const paymentBreakdown = scheduleDateLists().map((item) => ({
       ...item, amount: singlePlan.amount, currency: singlePlan.currency, status: 'Pending'
     }))
-    const unsubscribe = (
-      axios.post('/api/student/create', {studentInfo, paymentInfo, paymentBreakdown})
-        .then(res => {
-          setFormText('Redirecting...')
-          if (res.data) {
-            setTimeout(() => {
-              history.push(`/students/${res.data.student._id}`)
-            }, 300)
-          }
-        })
-        .catch(err => console.log(err))
-    )
-    return () => unsubscribe
+    axios.post('/api/student/create', {studentInfo, paymentInfo, paymentBreakdown})
+      .then(res => {
+        setFormText('Redirecting...')
+        if (res.data) {
+          setTimeout(() => {
+            history.push(`/students/${res.data.student._id}`)
+          }, 300)
+        }
+      })
+      .catch(err => console.log(err))
   }, 
   [firstName, lastName, email, country, depositAmount, depositPaidDate, 
     paymentStatus, salesGuy, paymentMethod, contractSigned, joinedDate, 
@@ -178,7 +175,7 @@ export const CreateStudent = () => {
                           value={paymentPlanId}
                           onChange={e => setPaymentPlanId(e.target.value)}
                         >
-                          <option value=""></option>
+                          <option value="">--Select Payment Plan--</option>
                           {paymentPlans && paymentPlans.map((item, i) => (
                             <option key={i} value={item._id}>{item.resultName}</option>
                           ))}
@@ -206,7 +203,7 @@ export const CreateStudent = () => {
                   </div>
 
                   <div className="form-group">
-                    <label>Sales Guy</label>
+                    <label>Sales Rep</label>
                     <input type="text" className="form-control form-control-lg app-input"
                       value={salesGuy} 
                       onChange={e => setSalesGuy(e.target.value)} 
@@ -308,6 +305,7 @@ export const CreateStudent = () => {
                 </div>
               </div>
             </div>
+          
           </div>
 
         </form>

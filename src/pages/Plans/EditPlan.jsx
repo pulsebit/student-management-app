@@ -1,5 +1,6 @@
 import Axios from 'axios'
 import { currencies, paymentRecurrenceType } from 'helpers'
+import { syncAllPlans } from 'helpers/syncStore'
 import React, {useState, useCallback, useEffect} from 'react'
 import { connect } from 'react-redux'
 import { useHistory, useParams } from 'react-router-dom'
@@ -24,6 +25,7 @@ export const EditPlan = () => {
       unsubscribe.then(res => {
         const updatedPlan = res.data
         if (updatedPlan) {
+          syncAllPlans()
           setTimeout(() => {
             history.push('/plans')
           }, 300)

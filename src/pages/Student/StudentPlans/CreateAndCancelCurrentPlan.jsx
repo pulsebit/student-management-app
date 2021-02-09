@@ -73,7 +73,21 @@ export const CreateAndCancelCurrentPlan = ({studentId, currentPaymentPlanId}) =>
   React.useEffect(() => {
     let unsubscribe = false
     if (plans && plans.length) {
-      if (!unsubscribe) setAllPlans(plans)
+      if (!unsubscribe) {
+        Axios.get(`/api/student/all_payment_plans_by_student_id/${studentId}`)
+          .then(res => {
+            const data = res.data
+            const filter = plans.filter(item => {
+              for (let i = 0; i < data.length; i++) {
+                if (item._id === data[i].paymentPlanId) {
+                  return false
+                }
+              }
+              return true
+            })
+            setAllPlans(filter)
+          })
+      }
     }
     return () => {
       unsubscribe = true

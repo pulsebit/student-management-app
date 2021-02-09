@@ -1,5 +1,5 @@
 import React from 'react'
-import { connect } from 'react-redux'
+import { connect, useSelector } from 'react-redux'
 import { HashRouter, Route, useParams } from 'react-router-dom'
 import CustomBreakdownLists from './CustomBreakdownLists'
 import EditPaymentOne from './EditPaymentOne'
@@ -13,24 +13,31 @@ const style = {
 
 const StudentPaymentBreakdown = ({paymentPlanId}) => {
   const {studentID} = useParams()
+  const {paymentPlanByStudent} = useSelector(state => state.paymentPlanByStudent)
 
   return (
     <div className="StudentPaymentBreakdown mb-4" style={style}>
 
       <HashRouter basename="/">  
-        <PaymentPlanAndPaymentListSingleDefaultView studentId={studentID} />
 
-        <Route exact path={`/edit_payment/:paymentId/`}>
-          <EditPaymentOne studentId={studentID} />
-        </Route>
+        {(paymentPlanByStudent && paymentPlanByStudent.length) && (
+          <>
+            <PaymentPlanAndPaymentListSingleDefaultView studentId={studentID} />
 
-        <Route exact path={`/new_payment/:paymentPlanId`}>
-          <CreatePayment studentId={studentID} paymentPlanId={paymentPlanId} />
-        </Route>
-        
-        <Route exact path={`/custom_payment_lists`}>
-          <CustomBreakdownLists studentId={studentID} />
-        </Route>
+            <Route exact path={`/edit_payment/:paymentId/`}>
+              <EditPaymentOne studentId={studentID} />
+            </Route>
+
+            <Route exact path={`/new_payment/:paymentPlanId`}>
+              <CreatePayment studentId={studentID} paymentPlanId={paymentPlanId} />
+            </Route>
+            
+            <Route exact path={`/custom_payment_lists`}>
+              <CustomBreakdownLists studentId={studentID} />
+            </Route>
+          </>
+        )}
+
       </HashRouter>
 
     </div>

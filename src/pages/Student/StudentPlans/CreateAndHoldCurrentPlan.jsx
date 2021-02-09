@@ -25,7 +25,6 @@ export const CreateAndHoldCurrentPlan = ({studentId, currentPaymentPlanId}) => {
     const yearUTC = new Date(paymentDateStart).getUTCFullYear()
     const dayUTC = new Date(paymentDateStart).getUTCDate()
     const monthUTC = new Date(paymentDateStart).getUTCMonth()
-    const count = singlePlan.and ? parseInt(singlePlan.quantity) + 1 : parseInt(singlePlan.quantity)
     let options = {freq: RRule.WEEKLY}
     if (singlePlan.recurrence === 'Weekly')
       options = {freq: RRule.WEEKLY}
@@ -35,17 +34,17 @@ export const CreateAndHoldCurrentPlan = ({studentId, currentPaymentPlanId}) => {
       options = {freq: RRule.MONTHLY} 
     rruleSet.rrule(new RRule({
       ...options,
-      count: count || 0,
+      count: singlePlan.quantity || 0,
       dtstart: new Date(Date.UTC(yearUTC, monthUTC, dayUTC, 0, 0))
     }))
     return rruleSet.all().map(date => {
       return {dueDate: inputTypeDateValue(date)}
     })
-  }, [rruleSet, singlePlan.quantity, singlePlan.recurrence, paymentDateStart, singlePlan.and])
+  }, [rruleSet, singlePlan.quantity, singlePlan.recurrence, paymentDateStart])
 
   const handleSubmit = React.useCallback(() => {
     const paymentBreakdown = scheduleDateLists().map((item) => ({
-      ...item, amount: singlePlan.amount, currency: singlePlan.currency, status: 'Pending', type: 'default'
+      ...item, amount: singlePlan.amount, currency: singlePlan.currency, status: 'Pending'
     }))
     const payload = {
       depositAmount: deposit, 
@@ -54,9 +53,7 @@ export const CreateAndHoldCurrentPlan = ({studentId, currentPaymentPlanId}) => {
       paymentDateStart, 
       paymentPlanId: newPlan,
       paymentBreakdown,
-      hasAnd: singlePlan.and ? singlePlan.and : false
     }
-    console.log(payload, 'payload')
     Axios.post(`/api/student/add_new_and_hold_the_current_plan/${studentId}/${currentPaymentPlanId}`, payload)
       .then(res => {
         if (res.data) {
@@ -79,13 +76,26 @@ export const CreateAndHoldCurrentPlan = ({studentId, currentPaymentPlanId}) => {
     scheduleDateLists, 
     singlePlan.amount, 
     singlePlan.currency,
-    singlePlan.and
   ])
 
   React.useEffect(() => {
     let unsubscribe = false
     if (plans && plans.length) {
-      if (!unsubscribe) setAllPlans(plans)
+      if (!unsubscribe) {
+        Axios.get(`/api/student/all_payment_plans_by_student_id/${studentId}`)
+          .then(res => {
+            const data = res.data
+            const filter = plans.filter(item => {
+              for (let i = 0; i < data.length; i++) {
+                if (item._id === data[i].paymentPlanId) {
+                  return false
+                }
+              }
+              return true
+            })
+            setAllPlans(filter)
+          })
+      }
     }
     return () => {
       unsubscribe = true
