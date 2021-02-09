@@ -37,7 +37,7 @@ const Login = ({dispatch, location}) => {
             if (location.state) {
               history.push(location.state.from.pathname)
             } else {
-              history.push('/dashboard')
+              history.push('/students')
             }
           }
         })
