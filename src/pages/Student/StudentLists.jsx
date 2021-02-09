@@ -19,8 +19,6 @@ const StudentList = () => {
   const history = useHistory()
   const match = useRouteMatch()
 
-  console.log('allDocs', allDocs)
-
   const query = useQuery()
   const name = query.get('name') || ''
   const email = query.get('email') || ''

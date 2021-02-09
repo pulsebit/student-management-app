@@ -24,7 +24,7 @@ onAuthStateChanged((isAuthenticated) => {
   )
 })
 
-store.subscribe(() => console.log('State', store.getState()))
+// store.subscribe(() => console.log('State', store.getState()))
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

@@ -15,12 +15,12 @@ export const PlanLists = () => {
     const confirm = window.confirm('Are you sure?')
     if (confirm) {
       Axios.delete(`/api/plan/${id}`)
-        .then(res => {
-          if(res.data.deleted) {
-            syncAllPlans()
-          }
-        })
-        .catch(err => console.log(err))
+      .then(res => {
+        if(res.data.deleted) {
+          syncAllPlans()
+        }
+      })
+      .catch(err => console.log(err))
     }
   }, [])
 
