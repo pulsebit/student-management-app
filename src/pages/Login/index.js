@@ -58,7 +58,7 @@ const Login = ({dispatch, location}) => {
   }
 
   if (isAuthenticated.isLoggedIn) {
-    return <Redirect to="/dashboard" />
+    return <Redirect to="/students" />
   }
 
   return (
