@@ -1,10 +1,7 @@
 const router = require('express').Router()
-const requireAuth = require('../middleware')
 const Plan = require('../models/Plan.model')
 const PaymentPlanByStudent = require('../models/PaymentPlanByStudent.model')
 const PaymentList = require('../models/PaymentList.model')
-
-router.use(requireAuth)
 
 router.get('/', (req, res) => {
   Plan.find((err, plans) => {
