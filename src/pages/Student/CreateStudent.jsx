@@ -23,6 +23,7 @@ export const CreateStudent = () => {
   const [paymentPlanId, setPaymentPlanId] = useState('')
   const [disableSubmitBtn, setDisableSubmitBtn] = useState(false)
   const [depositAmount, setDepositAmount] = useState(0)
+  const [pipeline, setPipeline] = useState('')
   const [depositPaidDate, setDepositPaidDate] = useState('')
   const [paymentDateStart, setPaymentDateStart] = useState('')
   const [currency, setCurrency] = useState('USD')
@@ -289,6 +290,14 @@ export const CreateStudent = () => {
                   <input className="form-control form-control-lg app-input" type="text" 
                     value={country} 
                     onChange={e => setCountry(e.target.value)} 
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Pipeline</label>
+                  <input className="form-control form-control-lg app-input" type="text" 
+                    value={pipeline} 
+                    onChange={e => setPipeline(e.target.value)} 
                   />
                 </div>
 

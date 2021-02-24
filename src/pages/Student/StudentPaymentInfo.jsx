@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
-export const StudentPaymentInfo = ({payment}) => {
+export const StudentPaymentInfo = ({payment, paid}) => {
   return (
     <>
       <div className="right__info_complete mb-4">
@@ -26,6 +26,12 @@ export const StudentPaymentInfo = ({payment}) => {
               <div className="col-md-3"> 
                 <span className="bold__label">Payment Method</span>
                 <p>{payment.paymentMethod}</p>
+              </div>
+            )}
+            {paid !== '' && (
+              <div className="col-md-3">
+                  <span className="bold__label">Total Paid</span>
+                  <p>{paid}</p>
               </div>
             )}
             

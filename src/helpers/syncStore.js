@@ -40,6 +40,19 @@ const syncAllPaymentPlanByStudent = (studentId) => {
     .catch(err => console.log(err))
 }
 
+const syncAllPaidByStudent = (studentId) => {
+  Axios.get(`/api/student/byAllPaid/${studentId}`)
+    .then(res => {
+      store.dispatch({
+        type: 'ALL_PAID_BY_STUDENT',
+        payload: {
+          data: res.data
+        }
+      })
+    })
+    .catch(err => console.log(err))
+}
+
 const syncAllPlans = () => {
   Axios.get('/api/plan')
     .then(res => {
@@ -58,5 +71,6 @@ const syncAllPlans = () => {
 export {
   syncPaymentLists,
   syncAllPaymentPlanByStudent,
-  syncAllPlans
+  syncAllPlans,
+  syncAllPaidByStudent
 }

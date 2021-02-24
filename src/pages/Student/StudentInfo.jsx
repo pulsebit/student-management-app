@@ -15,6 +15,7 @@ import {syncAllPaymentPlanByStudent} from 'helpers/syncStore'
 function StudentInfo() {
   const {studentID} = useParams()
   const [studentInfoSingle, setStudentInfoSingle] = useState({})
+  const [paidByStudent, setPaidByStudent] = useState({})
   const history = useHistory()
   const dispatch = useDispatch()
 
@@ -58,6 +59,20 @@ function StudentInfo() {
       unsubscribe = true
     }
   }, [studentID, dispatch])
+
+
+  useEffect(() => {
+    Axios.get(`/api/paymentLists/byAllPaid/${studentID}`)
+    .then(res => {
+      const paid = res.data;
+      let total = 0;
+      paid.forEach((item) => total = total + item.amount);
+      setPaidByStudent(total)
+      //console.log(total);
+    })
+    .catch(err => console.log(err))
+
+  }, [studentID])
 
   useEffect(() => {
     syncAllPaymentPlanByStudent(studentID)
@@ -114,7 +129,7 @@ function StudentInfo() {
           <div className="col-md-9">
             {getStatusColor(studentInfoSingle.paymentInfo.paymentStatus)}
 
-            <StudentPaymentInfo payment={studentInfoSingle.paymentInfo}/>
+            <StudentPaymentInfo payment={studentInfoSingle.paymentInfo} paid={paidByStudent}/>
 
             <StudentPlans studentId={studentID} />
 

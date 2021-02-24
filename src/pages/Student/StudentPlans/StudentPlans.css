@@ -35,6 +35,11 @@
 .payment-plans-wrapper span {
   color: #888f9e;
   text-decoration: none;
+  font-size: 14px;
+}
+
+.payment-plans-wrapper h4 {
+  font-size: 18px;
 }
 
 .payment-plan-lists {
@@ -98,4 +103,13 @@
   align-items: center;
   padding: 20px 10px 20px 20px;
   justify-content: space-between;
+}
+
+
+.paymentlist-action-wrapper .paymentlist-action {
+  font-size: 13px;
+}
+.StudentPaymentBreakdown h5 {
+  font-size: 16px;
+  color: #8b5cf6;
 }

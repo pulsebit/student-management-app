@@ -17,6 +17,7 @@ export const StudentEdit = () => {
   const [paymentStatus, setPaymentStatus] = useState('')  
   const [joinedDate, setJoinedDate] = useState('')
   const [phone, setPhone] = useState('') 
+  const [pipeline, setPipeline] = useState('') 
   const [formBtnText, setFormText] = useState('Submit')
   const [disableSubmitBtn, setDisableSubmitBtn] = useState(false)
   const [depositAmount, setDepositAmount] = useState('0')
@@ -32,7 +33,7 @@ export const StudentEdit = () => {
     e.preventDefault()
     setDisableSubmitBtn(true) 
     setFormText('Submitting...') 
-    const studentInfo = {firstName, lastName, email, country, phone}    
+    const studentInfo = {firstName, lastName, email, country, phone, pipeline}    
     const paymentInfo = {depositAmount, depositPaidDate, paymentStatus, 
                           salesGuy, paymentMethod, contractSigned, joinedDate, 
                           currency, paymentPlanId, paymentDateStart}
@@ -51,7 +52,7 @@ export const StudentEdit = () => {
   }, 
   [firstName, lastName, email, country, depositAmount, depositPaidDate, 
     paymentStatus, salesGuy, paymentMethod, contractSigned, joinedDate, 
-    currency, history, paymentDateStart, paymentPlanId, studentID, phone])
+    currency, history, paymentDateStart, paymentPlanId, studentID, phone, pipeline])
 
 
   useEffect(() => {
@@ -74,6 +75,7 @@ export const StudentEdit = () => {
           setDepositPaidDate( inputTypeDateValue(data.paymentInfo.depositPaidDate) || '' )
           setCurrency(data.paymentInfo.currency || 'USD')
           setPhone(data.phone || '')
+          setPipeline(data.pipeline || '')
           setPaymentPlanId(data.paymentInfo.paymentPlanId)
           setPaymentDateStart(inputTypeDateValue(data.paymentInfo.paymentDateStart))
         }
@@ -250,6 +252,14 @@ export const StudentEdit = () => {
                   <input className="form-control form-control-lg app-input" type="text" 
                     value={country} 
                     onChange={e => setCountry(e.target.value)} 
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Pipeline</label>
+                  <input className="form-control form-control-lg app-input" type="text" 
+                    value={pipeline} 
+                    onChange={e => setPipeline(e.target.value)} 
                   />
                 </div>
 

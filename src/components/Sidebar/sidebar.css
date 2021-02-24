@@ -25,6 +25,7 @@
 
 .left-sidebar ul li a span {
   margin-left: 8px;
+  font-size: 15px;
 }
 
 .menu__link--sublist.active,

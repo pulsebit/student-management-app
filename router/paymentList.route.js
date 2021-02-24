@@ -38,6 +38,17 @@ router.get('/byPaymentId/:paymentId', (req, res) => {
   })
 })
 
+router.get('/byAllPaid/:studentId', (req, res) => {
+  PaymentList.find({
+    "studentId" : { "$eq": req.params.studentId },
+    "status" : { "$eq": "Paid" }
+    }, {amount:1, _id:0}, (err, paymentList) => {
+        if (err) return res.sendStatus(500)
+        console.log(paymentList);
+        res.send(paymentList)
+  })
+})
+
 router.post('/update', (req, res) => {
   const {notes, paymentId, userId, amount, currency, dueDate, status, datePaid} = req.body
   PaymentList.findByIdAndUpdate(paymentId, {

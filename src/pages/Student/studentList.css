@@ -7,7 +7,7 @@
 }
 
 .studentListName {
-  font-size: 17px;
+  font-size: 14px;
   font-weight: 600;
   color: #00123a;
 }
@@ -152,4 +152,15 @@ button.advance-filter-btn {
 
 .filter-container .item:last-child {
   text-align: right;
+}
+
+.form-control {
+  font-size: 0.8rem;
+  height: 40px;
+}
+.table_wrapper table thead th {
+  font-size: 14px;
+}
+.search-wrapper .btn {
+  font-size: 13px;
 }

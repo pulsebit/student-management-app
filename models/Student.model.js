@@ -28,6 +28,7 @@ const schema = new mongoose.Schema({
   email: String,
   phone: String,
   country: String,
+  pipeline: String,
   photoUrl: String,
   paymentInfo: paymentSchema,
   paymentStatus: String,
