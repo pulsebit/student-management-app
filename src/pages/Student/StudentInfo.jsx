@@ -130,7 +130,7 @@ function StudentInfo() {
           <div className="col-md-9">
             {getStatusColor(studentInfoSingle.paymentInfo.paymentStatus)}
 
-            <StudentPaymentInfo payment={studentInfoSingle.paymentInfo} paid={paidByStudent}/>
+            <StudentPaymentInfo payment={studentInfoSingle.paymentInfo} paid={paidByStudent} pipeline={studentInfoSingle.pipeline || ''}/>
 
             <StudentPlans studentId={studentID} />
 

@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
-export const StudentPaymentInfo = ({payment, paid}) => {
+export const StudentPaymentInfo = ({payment, paid, pipeline}) => {
 
   return (
     <>
@@ -33,6 +33,11 @@ export const StudentPaymentInfo = ({payment, paid}) => {
             <div className="col-md-3">
                 <span className="bold__label">Total Paid</span>
                 <p>{paid}</p>
+            </div>
+
+            <div className="col-md-3">
+                <span className="bold__label">Pipeline</span>
+                <p>{pipeline}</p>
             </div>
             
             
