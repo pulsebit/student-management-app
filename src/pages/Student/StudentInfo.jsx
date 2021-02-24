@@ -15,7 +15,7 @@ import {syncAllPaymentPlanByStudent} from 'helpers/syncStore'
 function StudentInfo() {
   const {studentID} = useParams()
   const [studentInfoSingle, setStudentInfoSingle] = useState({})
-  const [paidByStudent, setPaidByStudent] = useState({})
+  const [paidByStudent, setPaidByStudent] = useState(0)
   const history = useHistory()
   const dispatch = useDispatch()
 
@@ -67,6 +67,7 @@ function StudentInfo() {
       const paid = res.data;
       let total = 0;
       paid.forEach((item) => total = total + item.amount);
+      console.log(total);
       setPaidByStudent(total)
       //console.log(total);
     })
