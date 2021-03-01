@@ -29,16 +29,28 @@ export const StudentPaymentInfo = ({payment, paid, pipeline}) => {
                 <p>{payment.paymentMethod}</p>
               </div>
             )}
-           
-            <div className="col-md-3">
-                <span className="bold__label">Total Paid</span>
-                <p>{paid}</p>
-            </div>
 
             <div className="col-md-3">
                 <span className="bold__label">Pipeline</span>
                 <p>{pipeline}</p>
             </div>
+
+            <div className="col-md-3">
+                <span className="bold__label">Deposit</span>
+                <p>{payment.depositAmount}</p>
+            </div>
+
+            <div className="col-md-3">
+                <span className="bold__label">Paid Plans</span>
+                <p>{paid}</p>
+            </div>
+
+            <div className="col-md-3">
+                <span className="bold__label">Total Paid</span>
+                <p>{payment.depositAmount + paid}</p>
+            </div>
+
+
             
             
           </div>

@@ -66,7 +66,7 @@ function StudentInfo() {
     .then(res => {
       const paid = res.data;
       let total = 0;
-      paid.forEach((item) => total = total + item.amount);
+      paid.forEach((item) => total = total + parseInt(item.amount))
       console.log(total);
       setPaidByStudent(total)
       //console.log(total);
