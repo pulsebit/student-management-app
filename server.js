@@ -8,6 +8,8 @@ const cookieParser = require('cookie-parser');
 const fileUpload = require('express-fileupload');
 const path = require('path');
 
+const port = process.env.PORT || 4000;
+
 mongoose.connect(process.env.DB_URI, {useNewUrlParser: true, useUnifiedTopology: true})
   .then(() => console.log('Connected to DB'))
   .catch(err => console.log(err.message));
@@ -34,6 +36,6 @@ app.use('/api/paymentLists', require('./router/paymentList.route'));
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
-app.listen(process.env.PORT || 4000, console.log('Server runnning at port 4000'));
+app.listen(port, console.log(`Server runnning at port ${port}`));
 
 
